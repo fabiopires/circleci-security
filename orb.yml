@@ -16,7 +16,7 @@ commands:
         description: The amount of time before a scan forcefully stops
         default: "600"
     steps:
-      - anchore/image_scan:
+      - anchore/analyze_image:
           image_name: "<< parameters.image_url >>"
           timeout: "<< parameters.timeout >>"
 

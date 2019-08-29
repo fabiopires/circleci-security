@@ -4,7 +4,7 @@ orbs:
   orb-tools: circleci/orb-tools@2.0.0
 
 workflows:
-  btd:
+  test_and_deploy:
     jobs:
       - orb-tools/publish:
           orb-path: orb.yml
