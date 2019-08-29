@@ -1,0 +1,39 @@
+version: 2.1
+description: Security tooling steps
+
+orbs:
+  anchore: anchore/anchore-engine@1.5.0
+
+commands:
+  anchore-remote-public:
+    description: "Use Anchore to scan an image from a public repository."
+    parameters:
+      image_url:
+        type: string
+        description: The location of the image to be scanned
+      timeout:
+        type: string
+        description: The amount of time before a scan forcefully stops
+        default: "600"
+    steps:
+      - anchore/image_scan:
+          image_name: "<< parameters.image_url >>"
+          timeout: "<< parameters.timeout >>"
+
+  # anchore-local:
+  #   description: Use Anchore to build and scan a local Dockerfile
+  #   parameters:
+  # anchore-remote-private:
+  #   description: Use Anchore to scan an image from a private repository
+  #   parameters: 
+
+# example:
+#   anchore-local:
+#     description: Use Anchore to build and scan a local Dockerfile
+#     usage: 
+#   anchore-remote-public:
+#     description: Use Anchore to scan an image from a public repository
+#     usage:
+#   anchore-remote-private:
+#     description: Use Anchore to scan an image from a private repository
+#     usage: 
