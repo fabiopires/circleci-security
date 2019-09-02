@@ -103,20 +103,27 @@ commands:
           path: anchore-reports
 
 jobs:
-  # container-local:
-  #   executor: anchore_engine
-  #   parameters:
-  #     image_name:
-  #       type: string
-  #       description: Image name & tag, e.g. "anchore-engine:latest".
-  #     timeout:
-  #       type: string
-  #       description: Length of time allocated before the build stops.
-  #   steps:
-  #     - anchore_scan_local:
-  #         image_name: << parameters.image_name >>
-  #         timeout: << parameters.timeout >>
-  #         dockerfile: << parameters.dockerfile >>
+  container-local:
+    executor: anchore_engine
+    parameters:
+      image_name:
+        type: string
+        description: Image name & tag, e.g. "anchore-engine:latest".
+      timeout:
+        type: string
+        description: Length of time allocated before the build stops.
+      dockerfile:
+        type: string
+        description: Dockerfile associated with local build
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - anchore_start_engine:
+          timeout: << parameters.timeout >>
+      - anchore_scan_local:
+          image_name: << parameters.image_name >>
+          timeout: << parameters.timeout >>
+          dockerfile: << parameters.dockerfile >>
 
   container-remote-public:
     executor: anchore_engine
