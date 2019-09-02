@@ -4,36 +4,66 @@ description: Security tooling steps
 orbs:
   anchore: anchore/anchore-engine@1.5.0
 
+executors:
+  anchore_engine:
+    description: |
+      Docker stable image with ANCHORE_VERSION environment variable set.
+    docker:
+    - image: docker:stable
+    environment:
+      ANCHORE_VERSION: v0.4.1
+
 commands:
-  anchore-remote-public:
-    description: "Use Anchore to scan an image from a public repository."
+  anchore_start_engine:
+    parameters:
+      timeout:
+        type: string
+        description: Length of time allocated before the build stops.
+    steps:
+      - run:
+          name: Starting the Anchore engine...
+          command: |
+            ANCHORE_VERSION="${ANCHORE_VERSION}"
+            TIMEOUT="<< parameters.timeout >>"
+            docker run -d --name anchore-engine "anchore/inline-scan:${ANCHORE_VERSION}" start
+            docker exec -e TIMEOUT="$TIMEOUT" -it anchore-engine bash -lc 'anchore_ci_tools.py --wait --timeout "$TIMEOUT"'
+
+  anchore_scan_remote_public:
+    parameters:
+      image_name:
+        type: string
+        description: Image repository & tag (eg - "docker.io/anchore/anchore-engine:latest").
+      timeout:
+        type: string
+        description: Length of time allocated before the build stops.
+    steps:
+      - run:
+          name: Analysing with Anchore
+          command: |
+            IMAGE_NAME="<< parameters.image_name >>"
+            TIMEOUT="<< parameters.timeout >>"
+            docker exec -e IMAGE_NAME="$IMAGE_NAME" -e TIMEOUT="$TIMEOUT" -it anchore-engine bash -lc 'anchore_ci_tools.py --analyze --report --image "$IMAGE_NAME" --timeout "$TIMEOUT"'
+            docker exec -e IMAGE_NAME="$IMAGE_NAME" -it anchore-engine bash -lc 'anchore-cli image get "$IMAGE_NAME"'
+            docker cp anchore-engine:/anchore-engine/anchore-reports/ ./
+      - anchore/parse_reports
+      - store_artifacts:
+          path: anchore-reports
+
+jobs:
+  container-remote-public:
+    executor: anchore_engine
     parameters:
       image_url:
         type: string
-        description: The location of the image to be scanned
+        description: Image repository & tag (eg - "docker.io/anchore/anchore-engine:latest").
       timeout:
         type: string
-        description: The amount of time before a scan forcefully stops
-        default: "600"
+        description: Length of time allocated before the build stops.
     steps:
-      - anchore/analyze_image:
-          image_name: "<< parameters.image_url >>"
-          timeout: "<< parameters.timeout >>"
-
-  # anchore-local:
-  #   description: Use Anchore to build and scan a local Dockerfile
-  #   parameters:
-  # anchore-remote-private:
-  #   description: Use Anchore to scan an image from a private repository
-  #   parameters: 
-
-# example:
-#   anchore-local:
-#     description: Use Anchore to build and scan a local Dockerfile
-#     usage: 
-#   anchore-remote-public:
-#     description: Use Anchore to scan an image from a public repository
-#     usage:
-#   anchore-remote-private:
-#     description: Use Anchore to scan an image from a private repository
-#     usage: 
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - anchore_start_engine:
+          timeout: << parameters.timeout >>
+      - anchore_scan_remote_public:
+          image_name: << parameters.image_url >>
+          timeout: << parameters.timeout >>
