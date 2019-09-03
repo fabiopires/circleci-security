@@ -122,6 +122,22 @@ commands:
       - store_artifacts:
           path: anchore-reports
 
+  detect-secrets_scan:
+    parameters:
+      directory:
+        default: $CIRCLE_WORKING_DIRECTORY
+        type: string
+        description: The directory to run detect-secrets on
+    steps:
+      - run:
+          name: Install and run detect-secrets
+          command: |
+            mkdir -p ~/output/detect-secrets
+            pip install --user detect-secrets
+            detect-secrets scan << parameters.directory >> | tee ~/output/detect-secrets/results_detect-secrets.json
+      - store_artifacts:
+          path: ~/output/detect-secrets
+
   dumpsterdiver_retrieve:
     parameters:
       installation_directory:
@@ -199,6 +215,8 @@ jobs:
       - checkout
       - dumpsterdiver_retrieve
       - dumpsterdiver_scan:
+          directory: << parameters.directory >>
+      - detect-secrets_scan:
           directory: << parameters.directory >>
 
   # Scan a locally built container image.
