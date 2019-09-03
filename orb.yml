@@ -139,7 +139,7 @@ commands:
   dumpsterdiver_scan:
     parameters:
       directory:
-        default: $CIRCLE_WORKING_DIRECTORY
+        default: ~/project
         type: string
         description: The directory to run DumpsterDiver on.
       installation_directory:
