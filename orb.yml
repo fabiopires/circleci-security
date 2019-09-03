@@ -169,6 +169,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+      - checkout
       - dumpsterdiver_retrieve
       - dumpsterdiver_scan:
           directory: << parameters.directory >>
