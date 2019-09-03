@@ -125,7 +125,7 @@ commands:
   detect-secrets_scan:
     parameters:
       directory:
-        default: $CIRCLE_WORKING_DIRECTORY
+        default: /home/circleci/project
         type: string
         description: The directory to run detect-secrets on
     steps:
@@ -206,7 +206,7 @@ jobs:
       - image: circleci/python:3.6.9
     parameters:
       directory:
-        default: $CIRCLE_WORKING_DIRECTORY
+        default: /home/circleci/project
         type: string
         description: The directory to run secrets detection tools on.
     steps:
