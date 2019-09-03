@@ -152,7 +152,7 @@ commands:
           command: mkdir -p ~/output/dumpsterdiver
       - run:
           name: Use DumpsterDiver to scan a directory
-          command: cd ~/dumpsterdiver && python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver.json -p << parameters.directory >> -s -a
+          command: cd ~/dumpsterdiver && python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver.json -p << parameters.directory >> -s -a --level 2
       - store_artifacts:
           path: ~/output/dumpsterdiver
 
