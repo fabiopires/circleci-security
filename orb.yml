@@ -160,7 +160,7 @@ jobs:
   # Check a directory for any secrets such as private keys, API keys, etc.
   secrets:
     docker:
-      - image: circleci/python:latest
+      - image: circleci/python:3.6.9
     parameters:
       directory:
         default: $CIRCLE_WORKING_DIRECTORY
