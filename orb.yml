@@ -157,6 +157,15 @@ jobs:
         default: false
         type: boolean
         description: The status of the remote registry
+      username:
+        default: $DOCKER_USER
+        type: string
+      password:
+        default: $DOCKER_PASS
+        type: string
+      registry:
+        default: docker.io
+        type: string
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -166,3 +175,6 @@ jobs:
           image_name: << parameters.image_url >>
           timeout: << parameters.timeout >>
           private: << parameters.private >>
+          username: << parameters.username >>
+          password: << parameters.password >>
+          registry: << parameters.registry >>
