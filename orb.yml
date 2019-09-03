@@ -151,8 +151,35 @@ commands:
           name: Create directory to store results
           command: mkdir -p ~/output/dumpsterdiver
       - run:
-          name: Use DumpsterDiver to scan a directory
-          command: cd ~/dumpsterdiver && python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver.json -p << parameters.directory >> -s -a --level 2
+          name: DumpsterDiver - Search for standard findings
+          command: |
+            cd ~/dumpsterdiver
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_standard.json -p << parameters.directory >> -s
+      - run:
+          name: DumpsterDiver - Search for AWS Keys (1)
+          command: |
+            cd ~/dumpsterdiver
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_aws_1.json -p << parameters.directory >> --grep-words *aws_access_key_id* *aws_secret_access_key* -a
+      - run:
+          name: DumpsterDiver - Search for AWS Keys (2)
+          command: |
+            cd ~/dumpsterdiver
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_aws_2.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
+      - run:
+          name: DumpsterDiver - Search for Azure Keys
+          command: |
+            cd ~/dumpsterdiver
+            ython DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_azure.json -p << parameters.directory >> --min-key 66 --max-key 66 --entropy 5.1
+      - run:
+          name: DumpsterDiver - Search for Private Keys
+          command: |
+            cd ~/dumpsterdiver
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_private_keys.json -p << parameters.directory >> --min-key 76 --max-key 76 --entropy 5.1
+      - run:
+          name: DumpsterDiver - Search for passwords (minimum eight, complexity seven)
+          command: |
+            cd ~/dumpsterdiver
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_passwords.json -p << parameters.directory >> --min-pass 8 --max-pass 20 --pass-complex 7
       - store_artifacts:
           path: ~/output/dumpsterdiver
 
