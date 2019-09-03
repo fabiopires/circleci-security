@@ -122,7 +122,58 @@ commands:
       - store_artifacts:
           path: anchore-reports
 
+  dumpsterdiver_retrieve:
+    parameters:
+      installation_directory:
+        default: ~/dumpsterdiver
+        type: string
+        description: The location to download DumpsterDiver to
+    steps:
+      - run:
+          name: Clone DumpsterDiver from GitHub repository
+          command: git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
+      - run:
+          name: Install DumpsterDiver's requirements
+          commaand: pip install -r << parameters.installation_directory >>/requirements.txt
+
+  dumpsterdiver_scan:
+    parameters:
+      directory:
+        default: $CIRCLE_WORKING_DIRECTORY
+        type: string
+        description: The directory to run DumpsterDiver on.
+      installation_directory:
+        default: ~/DumpsterDiver
+        type: string
+        description: The location where DumpsterDiver is
+    steps:
+      - run:
+          name: Create directory to store results
+          command: mkdir ~/output/dumpsterdiver
+      - run:
+          name: Use DumpsterDiver to scan a directory
+          command: python ~/dumpsterdiver/DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver.json -p << parameters.directory >> -s -a
+      - store_artifacts:
+          path: ~/output/dumpsterdiver
+
 jobs:
+  # Check a directory for any secrets such as private keys, API keys, etc.
+  secrets:
+    docker:
+      - image: circleci/python:latest
+    parameters:
+      directory:
+        default: $CIRCLE_WORKING_DIRECTORY
+        type: string
+        description: The directory to run secrets detection tools on.
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dumpsterdiver_retrieve
+      - dumpsterdiver_scan:
+          directory: << parameters.directory >>
+
+  # Scan a locally built container image.
   container-local:
     executor: anchore_engine
     parameters:
@@ -144,6 +195,8 @@ jobs:
           image_name: << parameters.image_name >>
           timeout: << parameters.timeout >>
           dockerfile: << parameters.dockerfile >>
+
+  # Scan a container image hosted remotely in a public or private registry
   container-remote:
     executor: anchore_engine
     parameters:
