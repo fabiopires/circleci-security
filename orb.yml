@@ -134,7 +134,7 @@ commands:
           command: git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
       - run:
           name: Install DumpsterDiver's requirements
-          commaand: pip install -r << parameters.installation_directory >>/requirements.txt
+          command: pip install -r << parameters.installation_directory >>/requirements.txt
 
   dumpsterdiver_scan:
     parameters:
