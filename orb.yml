@@ -149,7 +149,7 @@ commands:
     steps:
       - run:
           name: Create directory to store results
-          command: mkdir ~/output/dumpsterdiver
+          command: mkdir -p ~/output/dumpsterdiver
       - run:
           name: Use DumpsterDiver to scan a directory
           command: python ~/dumpsterdiver/DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver.json -p << parameters.directory >> -s -a
