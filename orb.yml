@@ -154,12 +154,12 @@ commands:
           name: DumpsterDiver - Search for standard findings
           command: |
             cd ~/dumpsterdiver
-            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_standard.json -p << parameters.directory >> -s
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_standard.json -p << parameters.directory >> -s -a
       - run:
           name: DumpsterDiver - Search for AWS Keys (1)
           command: |
             cd ~/dumpsterdiver
-            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_aws_1.json -p << parameters.directory >> --grep-words *aws_access_key_id* *aws_secret_access_key* -a
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_aws_1.json -p << parameters.directory >> --grep-words *aws_access_key_id* *aws_secret_access_key*
       - run:
           name: DumpsterDiver - Search for AWS Keys (2)
           command: |
@@ -169,7 +169,7 @@ commands:
           name: DumpsterDiver - Search for Azure Keys
           command: |
             cd ~/dumpsterdiver
-            ython DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_azure.json -p << parameters.directory >> --min-key 66 --max-key 66 --entropy 5.1
+            python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_azure.json -p << parameters.directory >> --min-key 66 --max-key 66 --entropy 5.1
       - run:
           name: DumpsterDiver - Search for Private Keys
           command: |
