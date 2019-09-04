@@ -2,12 +2,48 @@ version: 2.1
 
 orbs:
   orb-tools: circleci/orb-tools@2.0.0
+  security: salidas/security@dev:feature-parser
+
+jobs:
+  container-local:
+    docker:
+    - image: docker:stable-git
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: "Clone repo with Dockerfile"
+          command: git clone https://github.com/docker/docker-bench-security
+      - run:
+          name: "Build bad dockerfile image"
+          command: |
+            docker build -t "bad-docky:latest" docker-bench-security/.
+      - security/anchore_scan_local:
+          image_name: "bad-docky:latest"
+          dockerfile: "docker-bench-security/Dockerfile"
+          timeout: "600"
 
 workflows:
-  validate_and_deploy:
+  validate_deploy_and_test_orb:
     jobs:
       - orb-tools/publish:
           orb-path: orb.yml
           orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
           publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
           validate: true
+      # Container Image Scanning
+      # Testing support for scanning an image built locally with Anchore
+      - container-local:
+          requires:
+            - orb-tools/publish
+      # Testing support for scanning an image hosted on a public registry
+      - security/container-remote:
+          image_url: "docker.io/vulnerables/cve-2017-7494:latest"
+          timeout: "600"
+          requires:
+            - orb-tools/publish
+      # Secrets Detection
+      - security/secrets:
+          requires:
+            - orb-tools/publish
