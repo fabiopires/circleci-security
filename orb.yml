@@ -33,7 +33,7 @@ commands:
           name: Download and run parser
           command: |
             git clone https://github.com/salidas/circleci-security-parser
-            python3 circleci-orb-parse/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
+            python3 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
 
