@@ -9,7 +9,7 @@ executors:
     description: |
       Docker stable image with ANCHORE_VERSION environment variable set.
     docker:
-    - image: docker:stable
+    - image: docker:stable-git
     environment:
       ANCHORE_VERSION: v0.4.1
 
