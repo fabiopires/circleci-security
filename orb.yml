@@ -14,6 +14,29 @@ executors:
       ANCHORE_VERSION: v0.4.1
 
 commands:
+  parse:
+    parameters:
+      input_directory:
+        default: ~/output
+        type: string
+        description: "The directory containing raw tool output"
+      output_directory:
+        default: ~/output/parsed_output
+        type: string
+        description: "The directory to save parsed tool output to."
+    steps:
+      - run:
+          name: Create output folder
+          command: |
+            mkdir -p << parameters.output_directory >>
+      - run:
+          name: Download and run parser
+          command: |
+            git clone https://github.com/salidas/circleci-orb-parse
+            python3 circleci-orb-parse/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
+      - store_artifacts:
+          path: << parameters.output_directory >>
+
   anchore_start_engine:
     parameters:
       timeout:
@@ -119,8 +142,13 @@ commands:
             run_cmd="$run_cmd $IMAGE_NAME"
             eval "$run_cmd"
       - anchore/parse_reports
+      - run:
+          name: Move Anchore artifacts to a consistent location
+          command: |
+            mkdir -p ~/output/anchore
+            mv anchore-reports/* ~/output/anchore/
       - store_artifacts:
-          path: anchore-reports
+          path: ~/output/anchore
 
   detect-secrets_scan:
     parameters:
@@ -200,6 +228,30 @@ commands:
           path: ~/output/dumpsterdiver
 
 jobs:
+  # parse:
+  #   docker:
+  #     - image: circleci/python:3.6.9
+  #   parameters:
+  #     input_directory:
+  #       type: string
+  #       description: "The directory containing raw tool output"
+  #     output_directory:
+  #       default: ~/output/parsed_output
+  #       type: string
+  #       description: "The directory to save parsed tool output to."
+  # steps:
+  #   - run:
+  #       name: Create output folder
+  #       command: |
+  #         mkdir -p << parameters.output_directory >>
+  #   - run:
+  #       name: Download and run parser
+  #       command: |
+  #         git clone https://github.com/salidas/circleci-orb-parse
+  #         python3 circleci-orb-parse/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
+  #   - store_artifacts:
+  #       path: << parameters.output_directory >>
+
   # Check a directory for any secrets such as private keys, API keys, etc.
   secrets:
     docker:
@@ -218,6 +270,7 @@ jobs:
           directory: << parameters.directory >>
       - detect-secrets_scan:
           directory: << parameters.directory >>
+      - parse
 
   # Scan a locally built container image.
   container-local:
@@ -241,6 +294,7 @@ jobs:
           image_name: << parameters.image_name >>
           timeout: << parameters.timeout >>
           dockerfile: << parameters.dockerfile >>
+      - parse
 
   # Scan a container image hosted remotely in a public or private registry
   container-remote:
@@ -250,6 +304,7 @@ jobs:
         type: string
         description: Image repository & tag (eg - "docker.io/anchore/anchore-engine:latest").
       timeout:
+        default: "600"
         type: string
         description: Length of time allocated before the build stops.
       private:
