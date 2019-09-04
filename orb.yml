@@ -32,7 +32,7 @@ commands:
       - run:
           name: Download and run parser
           command: |
-            git clone https://github.com/salidas/circleci-orb-parse
+            git clone https://github.com/salidas/circleci-orb-parser
             python3 circleci-orb-parse/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
@@ -332,3 +332,4 @@ jobs:
           username: << parameters.username >>
           password: << parameters.password >>
           registry: << parameters.registry >>
+      - parse
