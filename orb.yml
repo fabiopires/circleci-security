@@ -108,6 +108,10 @@ commands:
         type: string
         description: The path to the Dockerfile used to build the local image
         default: ""
+      policy:
+        type: string
+        description: Anchore security policy to compare the scan results against
+        default: "${HOME}/project/.circleci/.anchore/policy_bundle.json"
     steps:
       - run:
           name: "[Anchore] Scanning local image"
@@ -125,7 +129,7 @@ commands:
             ANCHORE_VERSION="v0.4.1"
 
             TIMEOUT="<< parameters.timeout >>"
-            POLICY_BUNDLE_PATH="${HOME}/project/.circleci/.anchore/policy_bundle.json"
+            POLICY_BUNDLE_PATH="<< parameters.policy >>"
             DOCKERFILE_PATH="<< parameters.dockerfile >>"
             IMAGE_NAME="<< parameters.image_name >>"
 
@@ -230,6 +234,26 @@ commands:
             python DumpsterDiver.py -o ~/output/dumpsterdiver/results_dumpsterdiver_passwords.json -p << parameters.directory >> --min-pass 8 --max-pass 20 --pass-complex 7
       - store_artifacts:
           path: ~/output/dumpsterdiver
+
+  snyk_scan:
+    parameters:
+      image_name:
+        type: string
+        description: The container image to be scanned by Snyk
+    steps:
+      - run:
+          name: "[Snyk] Install bash and curl pre-requisites"
+          command: |
+            if [[ ! $(which bash) ]]; then
+              (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
+            fi
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+      - snyk/scan:
+          docker-image-name: << parameters.image_name >>
+          fail-on-issues: false
+          token-variable: SNYK_TOKEN
 
 jobs:
   # Check a directory for any secrets such as private keys, API keys, etc.
