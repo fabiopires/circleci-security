@@ -38,8 +38,8 @@ workflows:
           image_name: "bad-docky:latest"
           dockerfile: "docker-bench-security/Dockerfile"
           timeout: "600"
-          - requires:
-              - build_local_container
+          requires:
+            - build_local_container
       # Testing support for scanning an image hosted on a public registry
       - security/container-remote:
           image_url: "docker.io/vulnerables/cve-2017-7494:latest"
