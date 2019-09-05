@@ -318,7 +318,7 @@ jobs:
 
   # Scan a container image hosted remotely in a public or private registry
   container-remote:
-    executor: anchore_engine
+    executor: container_builder
     parameters:
       image_url:
         type: string
