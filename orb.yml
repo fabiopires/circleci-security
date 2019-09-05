@@ -3,6 +3,7 @@ description: Security tooling steps
 
 orbs:
   anchore: anchore/anchore-engine@1.5.0
+  snyk: snyk/snyk@0.0.8
 
 executors:
   anchore_engine:
@@ -251,6 +252,10 @@ jobs:
           directory: << parameters.directory >>
       - parse
 
+  # node-dependencies:
+  #   docker:
+  #     - image: circleci/node:4.8.2
+
   # Scan a locally built container image.
   container-local:
     executor: anchore_engine
@@ -273,6 +278,10 @@ jobs:
           image_name: << parameters.image_name >>
           timeout: << parameters.timeout >>
           dockerfile: << parameters.dockerfile >>
+      - snyk/scan:
+          docker-image-name: << parameters.image_name >>
+          fail-on-issues: false
+          token-variable: $SNYK_TOKEN
       - parse
 
   # Scan a container image hosted remotely in a public or private registry
@@ -311,4 +320,8 @@ jobs:
           username: << parameters.username >>
           password: << parameters.password >>
           registry: << parameters.registry >>
+      - snyk/scan:
+          docker-image-name: << parameters.image_name >>
+          fail-on-issues: false
+          token-variable: $SNYK_TOKEN
       - parse
