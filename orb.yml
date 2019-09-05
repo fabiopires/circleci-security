@@ -306,8 +306,8 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - snyk_image_scan:
-          image_name: << parameters.image_name >>
+      - snyk/scan:
+          docker-image-name: << parameters.image_name >>
       - anchore_start_engine:
           timeout: << parameters.timeout >>
       - anchore_scan_local:
@@ -343,8 +343,8 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - snyk_image_scan:
-          image_name: << parameters.image_url >>
+      - snyk/scan:
+          docker-image-name: << parameters.image_url >>
       - anchore_start_engine:
           timeout: << parameters.timeout >>
       - anchore_scan_remote:
