@@ -40,8 +40,8 @@ commands:
       - run:
           name: "[Parser] Download and run parser"
           command: |
-            if [[ ! $(which python3) ]]; then
-              (set +o pipefail; apk add python3 || apt-get install -y python3 || yum install -y python3)
+            if [[ ! $(which python3.7) ]]; then
+              (set +o pipefail; apk add python3.7 || apt-get install -y python3.7 || yum install -y python3.7)
             fi
             git clone https://github.com/salidas/circleci-security-parser
             python3 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
