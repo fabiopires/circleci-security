@@ -100,8 +100,13 @@ commands:
             docker exec -e IMAGE_NAME="$IMAGE_NAME" -it anchore-engine bash -lc 'anchore-cli image get "$IMAGE_NAME"'
             docker cp anchore-engine:/anchore-engine/anchore-reports/ ./
       - anchore/parse_reports
+      - run:
+          name: "[Anchore] Move output artifacts to a consistent location"
+          command: |
+            mkdir -p ~/output/anchore
+            mv anchore-reports/* ~/output/anchore/
       - store_artifacts:
-          path: anchore-reports
+          path: ~/output/anchore
 
   anchore_scan_local:
     parameters:

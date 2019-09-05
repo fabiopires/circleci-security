@@ -27,6 +27,7 @@ jobs:
           image_name: "bad-docky:latest"
           dockerfile: "docker-bench-security/Dockerfile"
           timeout: "600"
+      - security/parse
 
 workflows:
   validate_deploy_and_test_orb:
