@@ -347,6 +347,10 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+      - run:
+          name: "[Snyk] Pull remote image in preparation for Snyk scan"
+          command: |
+            docker pull << parameters.image_url >>
       - snyk/scan:
           docker-image-name: << parameters.image_url >>
           fail-on-issues: false
