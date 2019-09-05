@@ -247,6 +247,18 @@ commands:
       image_name:
         type: string
         description: The container image to be scanned by Snyk
+      fail_on_issues:
+        default: false
+        type: boolean
+        description: Should the build fail if vulns have been found?
+      monitor_on_build:
+        default: false
+        type: boolean
+        description: Determine whether the image should be monitored on snyk.io after scan
+      snyk_token:
+        default: SNYK_TOKEN
+        type: string
+        description: The environment variable containing the snyk.io API token
     steps:
       - run:
           name: "[Snyk] Install build pre-requisites"
@@ -262,9 +274,9 @@ commands:
             fi
       - snyk/scan:
           docker-image-name: << parameters.image_name >>
-          fail-on-issues: false
-          monitor-on-build: false
-          token-variable: SNYK_TOKEN
+          fail-on-issues: << parameters.fail_on_issues >>
+          monitor-on-build: << parameters.monitor_on_build >>
+          token-variable: << parameters.snyk_token >>
 
 jobs:
   # Check a directory for any secrets such as private keys, API keys, etc.
@@ -307,11 +319,8 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - snyk/scan:
-          docker-image-name: << parameters.image_name >>
-          fail-on-issues: false
-          monitor-on-build: false
-          token-variable: SNYK_TOKEN
+      - snyk_image_scan:
+          image_name: << parameters.image_name >>
       - anchore_start_engine:
           timeout: << parameters.timeout >>
       - anchore_scan_local:
@@ -324,9 +333,9 @@ jobs:
   container-remote:
     executor: container_builder
     parameters:
-      image_url:
+      image_name:
         type: string
-        description: Image repository & tag (eg - "docker.io/anchore/anchore-engine:latest").
+        description: Image org, name & tag (eg - "anchore/anchore-engine:latest").
       timeout:
         default: "600"
         type: string
@@ -350,16 +359,13 @@ jobs:
       - run:
           name: "[Snyk] Pull remote image in preparation for Snyk scan"
           command: |
-            docker pull << parameters.image_url >>
-      - snyk/scan:
-          docker-image-name: << parameters.image_url >>
-          fail-on-issues: false
-          monitor-on-build: false
-          token-variable: SNYK_TOKEN
+            docker pull << parameters.registry >>/<< parameters.image_name >>
+      - snyk_image_scan:
+          image_name: << parameters.image_name >>
       - anchore_start_engine:
           timeout: << parameters.timeout >>
       - anchore_scan_remote:
-          image_name: << parameters.image_url >>
+          image_name: << parameters.image_name >>
           timeout: << parameters.timeout >>
           private: << parameters.private >>
           username: << parameters.username >>

@@ -43,7 +43,7 @@ workflows:
             - orb-tools/publish
       # Testing support for scanning an image hosted on a public registry
       - security/container-remote:
-          image_url: "docker.io/vulnerables/cve-2017-7494:latest"
+          image_name: "vulnerables/cve-2017-7494:latest"
           timeout: "600"
           requires:
             - orb-tools/publish
