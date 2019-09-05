@@ -19,12 +19,12 @@ jobs:
           name: "Build bad dockerfile image"
           command: |
             docker build -t "bad-docky:latest" docker-bench-security/.
+      - security/snyk_scan:
+          image_name: "bad-docky:latest"
       - security/anchore_scan_local:
           image_name: "bad-docky:latest"
           dockerfile: "docker-bench-security/Dockerfile"
           timeout: "600"
-      - security/snyk_scan:
-          image_name: "bad-docky:latest"
 
 workflows:
   validate_deploy_and_test_orb:
