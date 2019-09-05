@@ -39,6 +39,11 @@ workflows:
       - build_and_scan_local_container:
           requires:
             - orb-tools/publish
+      # - security/container-local:
+      #     image_name:
+      #     timeout: "600"
+      #     requires:
+      #       - orb-tools/publish
       # Testing support for scanning an image hosted on a public registry
       - security/container-remote:
           image_url: "docker.io/vulnerables/cve-2017-7494:latest"

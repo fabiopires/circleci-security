@@ -6,6 +6,13 @@ orbs:
   snyk: snyk/snyk@0.0.8
 
 executors:
+  container_builder:
+    description: |
+      Simple base image with orb-specific variables set
+    docker:
+    - image: circleci/buildpack-deps:stretch
+    environment:
+      ANCHORE_VERSION: "v0.4.1"
   anchore_engine:
     description: |
       Docker stable image with ANCHORE_VERSION environment variable set.
@@ -235,7 +242,7 @@ commands:
       - store_artifacts:
           path: ~/output/dumpsterdiver
 
-  snyk_scan:
+  snyk_image_scan:
     parameters:
       image_name:
         type: string
@@ -285,7 +292,7 @@ jobs:
 
   # Scan a locally built container image.
   container-local:
-    executor: anchore_engine
+    executor: container_builder
     parameters:
       image_name:
         type: string
@@ -299,14 +306,14 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+      - snyk_image_scan:
+          image_name: << parameters.image_name >>
       - anchore_start_engine:
           timeout: << parameters.timeout >>
       - anchore_scan_local:
           image_name: << parameters.image_name >>
           timeout: << parameters.timeout >>
           dockerfile: << parameters.dockerfile >>
-      - snyk_scan:
-          image_name: << parameters.image_name >>
       - parse
 
   # Scan a container image hosted remotely in a public or private registry
@@ -336,7 +343,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - snyk_scan:
+      - snyk_image_scan:
           image_name: << parameters.image_url >>
       - anchore_start_engine:
           timeout: << parameters.timeout >>
