@@ -50,5 +50,4 @@ workflows:
       # Secrets Detection
       - security/secrets:
           requires:
-            - orb-tools/publish
-            
+            - orb-tools/publish   
