@@ -7,7 +7,9 @@ orbs:
 jobs:
   build_and_scan_local_container:
     docker:
-    - image: docker:stable-git
+    - image: circleci/buildpack-deps:stretch
+    environment:
+      ANCHORE_VERSION: "v0.4.1"
     steps:
       - checkout
       - setup_remote_docker:
@@ -19,7 +21,7 @@ jobs:
           name: "Build bad dockerfile image"
           command: |
             docker build -t "bad-docky:latest" docker-bench-security/.
-      - security/snyk_scan:
+      - security/snyk_image_scan:
           image_name: "bad-docky:latest"
       - security/anchore_scan_local:
           image_name: "bad-docky:latest"
