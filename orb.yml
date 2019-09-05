@@ -338,7 +338,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - snyk/scan:
+      - snyk_scan:
           docker-image-name: << parameters.image_url >>
           fail-on-issues: false
           token-variable: SNYK_TOKEN
