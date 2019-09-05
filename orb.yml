@@ -28,7 +28,7 @@ commands:
       - run:
           name: [Parser] Create output folder
           command: |
-            mkdir -p << parameters.output_directory >>
+            mkdir -p << parameters.output_directory >> 
       - run:
           name: [Parser] Download and run parser
           command: |
