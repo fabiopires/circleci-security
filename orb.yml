@@ -288,6 +288,7 @@ commands:
             if [[ ! $(which sudo) ]]; then
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
+            mkdir -p ~/output/snyk
       - snyk/scan:
           docker-image-name: << parameters.image_name >>
           fail-on-issues: << parameters.fail_on_issues >>
