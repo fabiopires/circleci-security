@@ -296,7 +296,7 @@ commands:
           fail-on-issues: << parameters.fail_on_issues >>
           monitor-on-build: << parameters.monitor_on_build >>
           token-variable: << parameters.snyk_token >>
-          additional-arguments: "--json > ~/output/snyk"
+          additional-arguments: "--json > ~/output/snyk/results_snyk.json"
       - store_artifacts:
           path: ~/output/snyk
 
