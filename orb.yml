@@ -293,6 +293,9 @@ commands:
           fail-on-issues: << parameters.fail_on_issues >>
           monitor-on-build: << parameters.monitor_on_build >>
           token-variable: << parameters.snyk_token >>
+          additional-variables: "--json > ~/output/snyk"
+      - store_artifacts:
+          path: ~/output/snyk
 
 jobs:
   # Check a directory for any secrets such as private keys, API keys, etc.
