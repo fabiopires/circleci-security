@@ -44,6 +44,7 @@ commands:
             # if [[ ! $(which python3.7) ]]; then
             #   (set +o pipefail; sudo apk add python3.7 || sudo apt-get install -y python3.7 || sudo yum install -y python3.7)
             # fi
+            
             # If it's still not available, we'll have to build it manually.
             if [[ ! $(which python3.7) ]]; then
               curl -O https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tar.xz
