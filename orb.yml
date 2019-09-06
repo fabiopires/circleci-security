@@ -289,7 +289,7 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[Snyk] Create output folder"
+          name: "[Snyk] Create folder for tool output"
           command: mkdir -p ~/output/snyk
       - snyk/scan:
           docker-image-name: << parameters.image_name >>
