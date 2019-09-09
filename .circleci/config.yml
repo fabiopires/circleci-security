@@ -28,9 +28,19 @@ jobs:
           dockerfile: "docker-bench-security/Dockerfile"
           timeout: "600"
       - security/parse
+  build_and_scan_node:
+    docker:
+      - image: circleci:node/latest
+    steps:
+      - run:
+          name: Clone and install Node applicaiton
+          command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
+      - security/snyk_node_scan
+      - security/parse
 
 workflows:
-  validate_deploy_and_test_orb:
+  validate_orb
+  validate_deploy_and_test_orb_steps:
     jobs:
       - orb-tools/publish:
           orb-path: orb.yml
@@ -51,4 +61,8 @@ workflows:
       # Secrets Detection
       - security/secrets:
           requires:
-            - orb-tools/publish   
+            - orb-tools/publish  
+      # Node application scanning
+      - build_and_scan_node:
+          requires:
+              - orb-tools/publish

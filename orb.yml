@@ -55,6 +55,7 @@ commands:
           name: "[Parser] Download and run parser"
           command: |
             git clone https://github.com/salidas/circleci-security-parser
+            pip install -r circleci-security-parser/requirements.txt
             python3.7 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
@@ -289,16 +290,54 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[Snyk] Create folder for tool output"
+          name: "[Snyk] Create folder for snyk output"
           command: mkdir -p ~/output/snyk
       - snyk/scan:
           docker-image-name: << parameters.image_name >>
           fail-on-issues: << parameters.fail_on_issues >>
           monitor-on-build: << parameters.monitor_on_build >>
           token-variable: << parameters.snyk_token >>
-          additional-arguments: "--json > ~/output/snyk/results_snyk.json"
+          additional-arguments: "--json > ~/output/snyk/results_image_snyk.json"
       - store_artifacts:
           path: ~/output/snyk
+
+  snyk_node_scan:
+    parameters:
+      fail_on_issues:
+        default: false
+        type: boolean
+        description: Should the build fail if vulns have been found?
+      monitor_on_build:
+        default: false
+        type: boolean
+        description: Determine whether the image should be monitored on snyk.io after scan
+      snyk_token:
+        default: SNYK_TOKEN
+        type: string
+        description: The environment variable containing the snyk.io API token
+    steps:
+      - run:
+          name: "[Snyk] Install build pre-requisites"
+          command: |
+            if [[ ! $(which bash) ]]; then
+              (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
+            fi
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
+      - run:
+          name: "[Snyk] Create folder for Snyk output"
+          command: mkdir -p ~/output/snyk
+      - snyk/scan:
+          fail-on-issues: << parameters.fail_on_issues >>
+          monitor-on-build: << parameters.monitor_on_build >>
+          token-variable: << parameters.snyk_token >>
+          additional-arguments: "--json > ~/output/snyk/results_node_snyk.json"
+      - store_artifacts:
+          path: ~/output/snyk 
 
 jobs:
   # Check a directory for any secrets such as private keys, API keys, etc.
