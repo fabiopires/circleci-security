@@ -55,7 +55,8 @@ commands:
           name: "[Parser] Download and run parser"
           command: |
             git clone https://github.com/salidas/circleci-security-parser
-            python3.7 -m pip install pip && pip install --user -r circleci-security-parser/requirements.txt
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3.7 get-pip.py
+            pip install --user -r circleci-security-parser/requirements.txt
             python3.7 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
