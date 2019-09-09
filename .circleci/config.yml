@@ -4,39 +4,39 @@ orbs:
   orb-tools: circleci/orb-tools@2.0.0
   security: salidas/security@dev:feature-snyk
 
-jobs:
-  build_and_scan_local_container:
-    docker:
-    - image: circleci/buildpack-deps:stretch
-    environment:
-      ANCHORE_VERSION: "v0.4.1"
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: "Clone repo with Dockerfile"
-          command: git clone https://github.com/docker/docker-bench-security
-      - run:
-          name: "Build bad dockerfile image"
-          command: |
-            docker build -t "bad-docky:latest" docker-bench-security/.
-      - security/snyk_image_scan:
-          image_name: "bad-docky:latest"
-      - security/anchore_scan_local:
-          image_name: "bad-docky:latest"
-          dockerfile: "docker-bench-security/Dockerfile"
-          timeout: "600"
-      - security/parse
-  build_and_scan_node:
-    docker:
-      - image: circleci:node/latest
-    steps:
-      - run:
-          name: Clone and install Node applicaiton
-          command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
-      - security/snyk_node_scan
-      - security/parse
+# jobs:
+#   build_and_scan_local_container:
+#     docker:
+#     - image: circleci/buildpack-deps:stretch
+#     environment:
+#       ANCHORE_VERSION: "v0.4.1"
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#       - run:
+#           name: "Clone repo with Dockerfile"
+#           command: git clone https://github.com/docker/docker-bench-security
+#       - run:
+#           name: "Build bad dockerfile image"
+#           command: |
+#             docker build -t "bad-docky:latest" docker-bench-security/.
+#       - security/snyk_image_scan:
+#           image_name: "bad-docky:latest"
+#       - security/anchore_scan_local:
+#           image_name: "bad-docky:latest"
+#           dockerfile: "docker-bench-security/Dockerfile"
+#           timeout: "600"
+#       - security/parse
+#   build_and_scan_node:
+#     docker:
+#       - image: circleci:node/latest
+#     steps:
+#       - run:
+#           name: Clone and install Node applicaiton
+#           command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
+#       - security/snyk_node_scan
+#       - security/parse
 
 workflows:
   validate_deploy_and_test_orb_steps:
@@ -46,22 +46,22 @@ workflows:
           orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
           publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
           validate: true
-      # Container Image Scanning
-      # Testing support for scanning an image built locally
-      - build_and_scan_local_container:
-          requires:
-            - orb-tools/publish
-      # Testing support for scanning an image hosted on a public registry
-      - security/container-remote:
-          image_name: "vulnerables/cve-2017-7494:latest"
-          timeout: "600"
-          requires:
-            - orb-tools/publish
-      # Secrets Detection
-      - security/secrets:
-          requires:
-            - orb-tools/publish  
-      # Node application scanning
-      - build_and_scan_node:
-          requires:
-              - orb-tools/publish
+      # # Container Image Scanning
+      # # Testing support for scanning an image built locally
+      # - build_and_scan_local_container:
+      #     requires:
+      #       - orb-tools/publish
+      # # Testing support for scanning an image hosted on a public registry
+      # - security/container-remote:
+      #     image_name: "vulnerables/cve-2017-7494:latest"
+      #     timeout: "600"
+      #     requires:
+      #       - orb-tools/publish
+      # # Secrets Detection
+      # - security/secrets:
+      #     requires:
+      #       - orb-tools/publish  
+      # # Node application scanning
+      # - build_and_scan_node:
+      #     requires:
+      #         - orb-tools/publish
