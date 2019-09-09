@@ -40,12 +40,7 @@ commands:
       - run:
           name: "[Parser] Download and install Python 3.7"
           command: |
-            # # Check if it's possible to download Python 3.7 via the usual means.
-            # if [[ ! $(which python3.7) ]]; then
-            #   (set +o pipefail; sudo apk add python3.7 || sudo apt-get install -y python3.7 || sudo yum install -y python3.7)
-            # fi
-
-            # If it's still not available, we'll have to build it manually.
+            # If Python 3.7 is not available, we'll have to build it manually.
             if [[ ! $(which python3.7) ]]; then
               curl -O https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tar.xz
               tar -xf Python-3.7.4.tar.xz
@@ -112,7 +107,6 @@ commands:
             docker exec -e IMAGE_NAME="$IMAGE_NAME" -e TIMEOUT="$TIMEOUT" -it anchore-engine bash -lc 'anchore_ci_tools.py --analyze --report --image "$IMAGE_NAME" --timeout "$TIMEOUT"'
             docker exec -e IMAGE_NAME="$IMAGE_NAME" -it anchore-engine bash -lc 'anchore-cli image get "$IMAGE_NAME"'
             docker cp anchore-engine:/anchore-engine/anchore-reports/ ./
-      - anchore/parse_reports
       - run:
           name: "[Anchore] Move output artifacts to a consistent location"
           command: |
@@ -174,7 +168,6 @@ commands:
             fi
             run_cmd="$run_cmd $IMAGE_NAME"
             eval "$run_cmd"
-      - anchore/parse_reports
       - run:
           name: "[Anchore] Move output artifacts to a consistent location"
           command: |
