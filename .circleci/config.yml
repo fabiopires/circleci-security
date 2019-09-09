@@ -30,7 +30,7 @@ jobs:
       - security/parse
   build_and_scan_node:
     docker:
-      - image: circleci:node/latest
+      - image: circleci/node:latest
     steps:
       - run:
           name: Clone and install Node applicaiton
