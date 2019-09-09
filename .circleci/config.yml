@@ -39,7 +39,6 @@ jobs:
       - security/parse
 
 workflows:
-  validate_orb
   validate_deploy_and_test_orb_steps:
     jobs:
       - orb-tools/publish:
