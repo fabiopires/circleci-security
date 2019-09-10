@@ -211,6 +211,7 @@ commands:
             pip install --user detect-secrets
       - run:
           name: "[detect-secrets] [Run]"
+          command: |
             detect-secrets scan << parameters.additional_arguments >> << parameters.directory >> | tee << parameters.output_directory >>/results_detect-secrets.json
       - store_artifacts:
           path: ~/output/detect-secrets
