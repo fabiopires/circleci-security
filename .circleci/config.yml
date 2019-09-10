@@ -7,6 +7,7 @@ orbs:
 
 
 jobs:
+  
   build_and_scan_local_container:
     docker:
     - image: circleci/buildpack-deps:stretch
@@ -30,6 +31,7 @@ jobs:
           dockerfile: "docker-bench-security/Dockerfile"
           timeout: "600"
       - security/parse
+
   build_and_scan_node_with_orb_commands:
     docker:
       - image: circleci/node:latest
