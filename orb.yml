@@ -422,7 +422,9 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - checkout
+      - run:
+          name: "[security/node] [Install] Browse to target folder"
+          command: cd << parameters.target_directory >>
       - snyk_node_scan
       - node_audit:
           target_directory: << parameters.target_directory >> 
@@ -485,7 +487,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: "[Snyk] [Install] Image"
+          name: "[security/container-remote] [Install] Image pull for Snyk"
           command: |
             docker pull << parameters.registry >>/<< parameters.image_name >>
       - snyk_image_scan:
