@@ -7,7 +7,7 @@ orbs:
 
 
 jobs:
-  
+
   build_and_scan_local_container:
     docker:
     - image: circleci/buildpack-deps:stretch
@@ -72,3 +72,5 @@ workflows:
           requires:
             - orb-tools/publish
       - security/node
+          requires:
+            - orb-tools/publish
