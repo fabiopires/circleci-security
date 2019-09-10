@@ -367,7 +367,7 @@ commands:
         type: string
         description: The location of the node project to be scanned
       output_directory:
-        default: ~/output/audit
+        default: ~/output/audit-ci
         type: string
         description: The location to save the audit output to
       additional_arguments:
@@ -387,7 +387,11 @@ commands:
       - run:
           name: "[audit-ci] [Run]"
           command: |
-            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json || true)
+            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci.json || true)
+      - run:
+          name: "[audit-ci] [Output] Remove non-JSON string from start of results file"
+          command: |
+            tail -n +2 << parameters.output_directory >>/unfinished_audit-ci.json > << parameters.output_directory >>/results_audit-ci.json
       - store_artifacts:
           path: << parameters.output_directory >>
 
