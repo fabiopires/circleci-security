@@ -431,34 +431,6 @@ jobs:
       - parse
 
 
-  # # Scan a locally built container image.
-  # container-local:
-  #   executor: container_builder
-  #   parameters:
-  #     image_name:
-  #       type: string
-  #       description: Image name & tag, e.g. "anchore-engine:latest".
-  #     timeout:
-  #       type: string
-  #       description: Length of time allocated before the build stops.
-  #     dockerfile:
-  #       type: string
-  #       description: Dockerfile associated with local build
-  #   steps:
-  #     - setup_remote_docker:
-  #         docker_layer_caching: true
-  #     - checkout
-  #     - snyk_image_scan:
-  #         image_name: << parameters.image_name >>
-  #     - anchore_start_engine:
-  #         timeout: << parameters.timeout >>
-  #     - anchore_scan_local:
-  #         image_name: << parameters.image_name >>
-  #         timeout: << parameters.timeout >>
-  #         dockerfile: << parameters.dockerfile >>
-  #     - parse
-
-
   # Scan a container image hosted remotely in a public or private registry
   container-remote:
     executor: container_builder
