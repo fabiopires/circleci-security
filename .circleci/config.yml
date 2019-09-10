@@ -66,6 +66,6 @@ workflows:
       - build_and_scan_node:
           requires:
             - orb-tools/publish
-      - security/node
+      - security/node:
           requires:
             - orb-tools/publish
