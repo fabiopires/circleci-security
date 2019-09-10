@@ -92,6 +92,9 @@ commands:
       registry:
         default: docker.io
         type: string
+      output_directory:
+        default: ~/output/anchore
+        type: string
     steps:
       - when:
           condition: << parameters.registry >>
@@ -111,10 +114,10 @@ commands:
       - run:
           name: "[Anchore] Move output artifacts to a consistent location"
           command: |
-            mkdir -p ~/output/anchore
-            mv anchore-reports/* ~/output/anchore/
+            mkdir -p << parameters.output_directory >>
+            mv anchore-reports/* << parameters.output_directory >>
       - store_artifacts:
-          path: ~/output/anchore
+          path: << parameters.output_directory >>
 
   anchore_scan_local:
     parameters:
@@ -132,6 +135,9 @@ commands:
         type: string
         description: Anchore security policy to compare the scan results against
         default: "${HOME}/project/.circleci/.anchore/policy_bundle.json"
+      output_directory:
+        default: ~/output/anchore
+        type: string
     steps:
       - run:
           name: "[Anchore] Scanning local image"
@@ -172,10 +178,10 @@ commands:
       - run:
           name: "[Anchore] Move output artifacts to a consistent location"
           command: |
-            mkdir -p ~/output/anchore
-            mv anchore-reports/* ~/output/anchore/
+            mkdir -p << parameters.output_directory >>
+            mv anchore-reports/* << parameters.output_directory >>
       - store_artifacts:
-          path: ~/output/anchore
+          path: << parameters.output_directory >>
 
   detect-secrets_scan:
     parameters:
@@ -200,6 +206,7 @@ commands:
             detect-secrets scan << parameters.additional_arguments >> << parameters.directory >> | tee << parameters.output_directory >>/results_detect-secrets.json
       - store_artifacts:
           path: ~/output/detect-secrets
+
 
   dumpsterdiver_scan:
     parameters:
@@ -293,6 +300,7 @@ commands:
       - store_artifacts:
           path: ~/output/snyk
 
+
   snyk_node_scan:
     parameters:
       fail_on_issues:
@@ -330,7 +338,7 @@ commands:
             fi
       - run:
           name: "[Snyk] Create folder for Snyk output"
-          command: mkdir -p ~/output/snyk
+          command: mkdir -p << parameters.output_directory >>
       - snyk/scan:
           fail-on-issues: << parameters.fail_on_issues >>
           monitor-on-build: << parameters.monitor_on_build >>
@@ -368,7 +376,8 @@ commands:
       - run:
           name: "[audit-ci] Run"
           command: |
-            audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json
+            mkdir -p << parameters.output_directory >>
+            cd << parameters.target_directory >> && audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json
 
 
 jobs:
@@ -391,42 +400,52 @@ jobs:
           directory: << parameters.directory >>
       - parse
 
+
   node:
     docker:
       - image: circleci/node:latest
+    parameters:
+      target_directory:
+        default: ~/project
+        type: string
+        description: The location of the repository to be assessed
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
       - snyk_node_scan
-      - node_audit
+      - node_audit:
+          target_directory: << parameters.target_directory >> 
       - parse
 
-  # Scan a locally built container image.
-  container-local:
-    executor: container_builder
-    parameters:
-      image_name:
-        type: string
-        description: Image name & tag, e.g. "anchore-engine:latest".
-      timeout:
-        type: string
-        description: Length of time allocated before the build stops.
-      dockerfile:
-        type: string
-        description: Dockerfile associated with local build
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - snyk_image_scan:
-          image_name: << parameters.image_name >>
-      - anchore_start_engine:
-          timeout: << parameters.timeout >>
-      - anchore_scan_local:
-          image_name: << parameters.image_name >>
-          timeout: << parameters.timeout >>
-          dockerfile: << parameters.dockerfile >>
-      - parse
+
+  # # Scan a locally built container image.
+  # container-local:
+  #   executor: container_builder
+  #   parameters:
+  #     image_name:
+  #       type: string
+  #       description: Image name & tag, e.g. "anchore-engine:latest".
+  #     timeout:
+  #       type: string
+  #       description: Length of time allocated before the build stops.
+  #     dockerfile:
+  #       type: string
+  #       description: Dockerfile associated with local build
+  #   steps:
+  #     - setup_remote_docker:
+  #         docker_layer_caching: true
+  #     - checkout
+  #     - snyk_image_scan:
+  #         image_name: << parameters.image_name >>
+  #     - anchore_start_engine:
+  #         timeout: << parameters.timeout >>
+  #     - anchore_scan_local:
+  #         image_name: << parameters.image_name >>
+  #         timeout: << parameters.timeout >>
+  #         dockerfile: << parameters.dockerfile >>
+  #     - parse
+
 
   # Scan a container image hosted remotely in a public or private registry
   container-remote:
