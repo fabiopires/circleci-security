@@ -65,7 +65,7 @@ workflows:
       # Node application scanning
       - build_and_scan_node:
           requires:
-              - orb-tools/publish
+            - orb-tools/publish
       - security/node
           requires:
-              - orb-tools/publish
+            - orb-tools/publish
