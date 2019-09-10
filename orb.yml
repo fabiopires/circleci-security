@@ -415,6 +415,10 @@ jobs:
     docker:
       - image: circleci/node:latest
     parameters:
+      yarn:
+        default: false
+        type: boolean
+        description: Determines whether Yarn or NPM is used
       target_directory:
         default: ~/project
         type: string
@@ -422,9 +426,22 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+      - checkout
       - run:
           name: "[security/node] [Install] Browse to target folder"
           command: cd << parameters.target_directory >>
+      - when:
+          condition: << parameters.yarn >>
+          steps:
+            - run:
+                name: "[security/node] [Install] Dependencies via yarn"  
+                command: yarn install
+      - unless:
+          condition: << parameters.yarn >>
+          steps:
+            - run:
+                name: "[security/node] [Install] Dependencies via npm"
+                command: npm install
       - snyk_node_scan
       - node_audit:
           target_directory: << parameters.target_directory >> 
