@@ -388,7 +388,8 @@ commands:
           name: "[audit-ci] [Run]"
           command: |
             cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json || true)
-
+      - store_artiacts:
+          path: << parameters.output_directory >>
 
 jobs:
   # Check a directory for any secrets such as private keys, API keys, etc.
