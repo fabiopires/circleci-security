@@ -15,13 +15,6 @@ executors:
     - image: circleci/buildpack-deps:stretch
     environment:
       ANCHORE_VERSION: "v0.4.1"
-  anchore_engine:
-    description: |
-      Docker stable image with ANCHORE_VERSION environment variable set.
-    docker:
-    - image: docker:stable-git
-    environment:
-      ANCHORE_VERSION: v0.4.1
 
 
 commands:
