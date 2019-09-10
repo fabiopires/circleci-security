@@ -34,11 +34,7 @@ commands:
         description: "The directory to save parsed tool output to."
     steps:
       - run:
-          name: "[Parser] Create output folder"
-          command: |
-            mkdir -p << parameters.output_directory >> 
-      - run:
-          name: "[Parser] Download and install Python 3.7"
+          name: "[Parser] [Install] Python 3.7.4"
           command: |
             # If Python 3.7 is not available, we'll have to build it manually.
             if [[ ! $(which python3.7) ]]; then
@@ -47,11 +43,21 @@ commands:
               cd Python-3.7.4 && ./configure && make build_all && sudo make altinstall
             fi
       - run:
-          name: "[Parser] Download and run parser"
+          name: "[Parser] [Install] pip"
           command: |
             git clone https://github.com/salidas/circleci-security-parser
-            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && sudo python3.7 get-pip.py
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && sudo python3.7 get-pip.py  
+      - run:
+          name: "[Parser] [Install] circleci-security-parser"
+          command: |
             pip install --user -r circleci-security-parser/requirements.txt
+      - run:
+          name: "[Parser] [Output] Create"
+          command: |
+            mkdir -p << parameters.output_directory >> 
+      - run:
+          name: "[Parser] [Run]"
+          command: |
             python3.7 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
@@ -104,7 +110,7 @@ commands:
                 registry_user: << parameters.username >>
                 registry_pass: << parameters.password >>
       - run:
-          name: "[Anchore] Scanning remote image"
+          name: "[Anchore] [Run]"
           command: |
             IMAGE_NAME="<< parameters.image_name >>"
             TIMEOUT="<< parameters.timeout >>"
@@ -112,7 +118,7 @@ commands:
             docker exec -e IMAGE_NAME="$IMAGE_NAME" -it anchore-engine bash -lc 'anchore-cli image get "$IMAGE_NAME"'
             docker cp anchore-engine:/anchore-engine/anchore-reports/ ./
       - run:
-          name: "[Anchore] Move output artifacts to a consistent location"
+          name: "[Anchore] [Output] Move artifacts"
           command: |
             mkdir -p << parameters.output_directory >>
             mv anchore-reports/* << parameters.output_directory >>
@@ -140,7 +146,7 @@ commands:
         type: string
     steps:
       - run:
-          name: "[Anchore] Scanning local image"
+          name: "[Anchore] [Run]"
           command: |
             if [[ ! $(which bash) ]]; then
               (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
@@ -176,7 +182,7 @@ commands:
             run_cmd="$run_cmd $IMAGE_NAME"
             eval "$run_cmd"
       - run:
-          name: "[Anchore] Move output artifacts to a consistent location"
+          name: "[Anchore] [Output] Move artifacts"
           command: |
             mkdir -p << parameters.output_directory >>
             mv anchore-reports/* << parameters.output_directory >>
@@ -199,10 +205,12 @@ commands:
         description: Additional CLI arguments that should be run
     steps:
       - run:
-          name: "[detect-secrets] Install and run detect-secrets"
+          name: "[detect-secrets] [Install] detect-secrets"
           command: |
             mkdir -p ~/output/detect-secrets
             pip install --user detect-secrets
+      - run:
+          name: "[detect-secrets] [Run]"
             detect-secrets scan << parameters.additional_arguments >> << parameters.directory >> | tee << parameters.output_directory >>/results_detect-secrets.json
       - store_artifacts:
           path: ~/output/detect-secrets
@@ -228,16 +236,15 @@ commands:
         description: Additional CLI arguments that should be run
     steps:
       - run:
-          name: "[DumpsterDiver] Clone from GitHub repository"
-          command: git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
+          name: "[DumpsterDiver] [Install] python3-dev, pip requirements"
+          command: |
+          git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
+          sudo apt-get install python3-dev && pip install --user -r << parameters.installation_directory >>/requirements.txt
       - run:
-          name: "[DumpsterDiver] Install requirements"
-          command: sudo apt-get install python3-dev && pip install --user -r << parameters.installation_directory >>/requirements.txt
-      - run:
-          name: "[DumpsterDiver] Create directory to store results"
+          name: "[DumpsterDiver] [Output] Create"
           command: mkdir -p ~/output/dumpsterdiver
       - run:
-          name: "[DumpsterDiver] Search"
+          name: "[DumpsterDiver] [Run]"
           command: |
             cd ~/dumpsterdiver
             python DumpsterDiver.py << parameters.additional_arguments >> -o << parameters.output_directory >>/results_dumpsterdiver_standard.json -p << parameters.directory >> -s -a
@@ -277,7 +284,7 @@ commands:
         description: Additional CLI arguments that should be run
     steps:
       - run:
-          name: "[Snyk] Install build pre-requisites"
+          name: "[Snyk] [Install] bash, curl, sudo"
           command: |
             if [[ ! $(which bash) ]]; then
               (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
@@ -289,7 +296,7 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[Snyk] Create folder for snyk output"
+          name: "[Snyk] [Output] Create"
           command: mkdir -p ~/output/snyk
       - snyk/scan:
           docker-image-name: << parameters.image_name >>
@@ -325,7 +332,7 @@ commands:
         description: Additional CLI arguments that should be run
     steps:
       - run:
-          name: "[Snyk] Install build pre-requisites"
+          name: "[Snyk] [Install] bash, curl, sudo"
           command: |
             if [[ ! $(which bash) ]]; then
               (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
@@ -337,7 +344,7 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[Snyk] Create folder for Snyk output"
+          name: "[Snyk] [Output] Create"
           command: mkdir -p << parameters.output_directory >>
       - snyk/scan:
           fail-on-issues: << parameters.fail_on_issues >>
@@ -368,15 +375,17 @@ commands:
         description: Additional CLI arguments that should be run with
     steps:
       - run:
-          name: "[audit-ci] Install"
+          name: "[audit-ci] [Install]"
           command: |
             if [[ ! $(which audit-ci) ]]; then
               (set +o pipefail; npm i --save-dev audit-ci || yarn add -D audit-ci)
             fi
       - run:
-          name: "[audit-ci] Run"
+          name: "[audit-ci] [Output] Create"
+          command: mkdir -p << parameters.output_directory >>
+      - run:
+          name: "[audit-ci] [Run]"
           command: |
-            mkdir -p << parameters.output_directory >>
             cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json || true)
 
 
@@ -475,7 +484,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: "[Snyk] Pull remote image in preparation for Snyk scan"
+          name: "[Snyk] [Install] Image"
           command: |
             docker pull << parameters.registry >>/<< parameters.image_name >>
       - snyk_image_scan:
