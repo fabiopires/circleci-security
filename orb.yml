@@ -381,7 +381,7 @@ commands:
 
 
 jobs:
-  # Check a directory for any secrets such a;s private keys, API keys, etc.
+  # Check a directory for any secrets such as private keys, API keys, etc.
   secrets:
     docker:
       - image: circleci/python:3.6.9
