@@ -377,7 +377,7 @@ commands:
           name: "[audit-ci] Run"
           command: |
             mkdir -p << parameters.output_directory >>
-            cd << parameters.target_directory >> && audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json
+            cd << parameters.target_directory >> && node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/results_audit-ci.json
 
 
 jobs:
