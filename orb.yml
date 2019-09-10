@@ -52,7 +52,7 @@ commands:
           command: |
             pip install --user -r circleci-security-parser/requirements.txt
       - run:
-          name: "[Parser] [Output] Create"
+          name: "[Parser] [Output] Create folder"
           command: |
             mkdir -p << parameters.output_directory >> 
       - run:
@@ -242,7 +242,7 @@ commands:
           git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
           sudo apt-get install python3-dev && pip install --user -r << parameters.installation_directory >>/requirements.txt
       - run:
-          name: "[DumpsterDiver] [Output] Create"
+          name: "[DumpsterDiver] [Output] Create folder"
           command: mkdir -p ~/output/dumpsterdiver
       - run:
           name: "[DumpsterDiver] [Run]"
@@ -297,7 +297,7 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[Snyk] [Output] Create"
+          name: "[Snyk] [Output] Create folder"
           command: mkdir -p ~/output/snyk
       - snyk/scan:
           docker-image-name: << parameters.image_name >>
@@ -345,7 +345,7 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[Snyk] [Output] Create"
+          name: "[Snyk] [Output] Create folder"
           command: mkdir -p << parameters.output_directory >>
       - snyk/scan:
           fail-on-issues: << parameters.fail_on_issues >>
@@ -382,7 +382,7 @@ commands:
               (set +o pipefail; npm i --save-dev audit-ci || yarn add -D audit-ci)
             fi
       - run:
-          name: "[audit-ci] [Output] Create"
+          name: "[audit-ci] [Output] Create folder"
           command: mkdir -p << parameters.output_directory >>
       - run:
           name: "[audit-ci] [Run]"
