@@ -239,8 +239,8 @@ commands:
       - run:
           name: "[DumpsterDiver] [Install] python3-dev, pip requirements"
           command: |
-          git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
-          sudo apt-get install python3-dev && pip install --user -r << parameters.installation_directory >>/requirements.txt
+            git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
+            sudo apt-get install python3-dev && pip install --user -r << parameters.installation_directory >>/requirements.txt
       - run:
           name: "[DumpsterDiver] [Output] Create folder"
           command: mkdir -p ~/output/dumpsterdiver
