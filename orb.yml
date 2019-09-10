@@ -231,7 +231,7 @@ commands:
         type: string
         description: The directory to run DumpsterDiver on.
       installation_directory:
-        default: ~/DumpsterDiver
+        default: ~/dumpsterdiver
         type: string
         description: The location where DumpsterDiver is
       output_directory:
@@ -250,11 +250,11 @@ commands:
             sudo apt-get install python3-dev && pip install --user -r << parameters.installation_directory >>/requirements.txt
       - run:
           name: "[DumpsterDiver] [Output] Create folder"
-          command: mkdir -p ~/output/dumpsterdiver
+          command: mkdir -p << parameters.output_directory >>
       - run:
           name: "[DumpsterDiver] [Run]"
           command: |
-            cd ~/dumpsterdiver
+            cd << parameters.installation_directory >> 
             python DumpsterDiver.py << parameters.additional_arguments >> -o << parameters.output_directory >>/results_dumpsterdiver_standard.json -p << parameters.directory >> -s -a
             python DumpsterDiver.py << parameters.additional_arguments >> -o << parameters.output_directory >>/results_dumpsterdiver_aws_1.json -p << parameters.directory >> --grep-words *aws_access_key_id* *aws_secret_access_key*
             python DumpsterDiver.py << parameters.additional_arguments >> -o << parameters.output_directory >>/results_dumpsterdiver_aws_2.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
@@ -262,7 +262,7 @@ commands:
             python DumpsterDiver.py << parameters.additional_arguments >> -o << parameters.output_directory >>/results_dumpsterdiver_private_keys.json -p << parameters.directory >> --min-key 76 --max-key 76 --entropy 5.1
             python DumpsterDiver.py << parameters.additional_arguments >> -o << parameters.output_directory >>/results_dumpsterdiver_passwords.json -p << parameters.directory >> --min-pass 8 --max-pass 20 --pass-complex 7
       - store_artifacts:
-           path: ~/output/dumpsterdiver
+           path: << parameters.output_directory >> 
                      
 
   snyk_image_scan:
