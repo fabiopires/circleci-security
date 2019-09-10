@@ -1,9 +1,11 @@
 version: 2.1
 description: Security tooling steps
 
+
 orbs:
   anchore: anchore/anchore-engine@1.5.0
   snyk: snyk/snyk@0.0.8
+
 
 executors:
   container_builder:
@@ -20,6 +22,7 @@ executors:
     - image: docker:stable-git
     environment:
       ANCHORE_VERSION: v0.4.1
+
 
 commands:
   parse:
@@ -62,6 +65,7 @@ commands:
       - store_artifacts:
           path: << parameters.output_directory >>
 
+
   anchore_start_engine:
     parameters:
       timeout:
@@ -76,6 +80,7 @@ commands:
             TIMEOUT="<< parameters.timeout >>"
             docker run -d --name anchore-engine "anchore/inline-scan:${ANCHORE_VERSION}" start
             docker exec -e TIMEOUT="$TIMEOUT" -it anchore-engine bash -lc 'anchore_ci_tools.py --wait --timeout "$TIMEOUT"'
+
 
   anchore_scan_remote:
     parameters:
@@ -124,6 +129,7 @@ commands:
             mv anchore-reports/* << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
+
 
   anchore_scan_local:
     parameters:
@@ -188,6 +194,7 @@ commands:
             mv anchore-reports/* << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
+
 
   detect-secrets_scan:
     parameters:
