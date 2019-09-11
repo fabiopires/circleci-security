@@ -140,6 +140,7 @@ commands:
         type: string
         description: Image name & tag, e.g. "anchore-engine:latest".
       timeout:
+        default: "600"
         type: string
         description: Length of time allocated before the build stops.
       dockerfile:
