@@ -7,7 +7,8 @@ orbs:
 
 
 jobs:
-
+  # This job simulates the local building and security scanning of a Docker image.
+  # The job runs all orb commands that deal with local image scanning.
   build_and_scan_local_container:
     docker:
     - image: circleci/buildpack-deps:stretch
@@ -32,6 +33,9 @@ jobs:
           timeout: "600"
       - security/parse
 
+  # This job simulates the installation and security scanning of a node project.
+  # The project's dependencies are installed via npm, then all orb commands to do
+  # with node project scanning are invoked.
   build_and_scan_node_with_orb_commands:
     docker:
       - image: circleci/node:latest
@@ -45,15 +49,18 @@ jobs:
 
 
 workflows:
+  # The main workflow of this config file aims to test all functionality made available
+  # by the security orb.
   validate_deploy_and_test_orb_steps:
     jobs:
+      # The first job is to check that the syntax of the orb is valid, and then
+      # push it to the Circle CI registry.
       - orb-tools/publish:
           orb-path: orb.yml
           orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
           publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
           validate: true
-      # Container Image Scanning
-      # Testing support for scanning an image built locally
+      # Container image scanning
       - build_and_scan_local_container:
           requires:
             - orb-tools/publish
@@ -63,7 +70,7 @@ workflows:
           timeout: "600"
           requires:
             - orb-tools/publish
-      # Secrets Detection
+      # Secrets detection
       - security/secrets:
           requires:
             - orb-tools/publish  
