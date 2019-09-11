@@ -21,7 +21,7 @@ executors:
 # 1) [Install] - Install any pre-requisites such as packages, dependencies, etc.
 # 2) [Prepare] - Prepare any files or directories that need to be set up for tool output.
 # 3) [Run] - Run the associated tool
-# 4) [Post] - Do any post-execution steps, such as uploading artifacts, renaming files, etc.
+# 4) [Post] - Do any post-execution steps, such as uploading artifacts, renaming output files, etc.
 commands:
 
   # This command downloads and runs the custom circleci-security-parser tool to go through
