@@ -2,6 +2,157 @@ version: 2.1
 description: Security tooling steps
 
 
+examples:
+
+  anchore_scan_local:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      jobs:
+        build_and_scan_local_container:
+          docker:
+          - image: circleci/buildpack-deps:stretch
+          environment:
+            ANCHORE_VERSION: "v0.4.1"
+          steps:
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - run:
+                name: "[build_and_scan_local_container] [Installer] Clone repo and build image from Dockerfile"
+                command: |
+                  git clone https://github.com/docker/docker-bench-security
+                  docker build -t "bad-docky:latest" docker-bench-security/.
+            - security/anchore_scan_local:
+                image_name: "dbs:latest"
+                dockerfile: "docker-bench-security/Dockerfile"
+            - security/parse
+
+
+  detect-secrets_scan:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      jobs:
+        scan:
+          docker:
+          - image: circleci/python:3.6.9
+          steps:
+          - setup_remote_docker:
+              docker_layer_caching: true
+          - checkout
+          - security/detect-secrets_scan:
+              directory: << parameters.directory >>
+          - security/parse
+
+
+  dumpsterdiver_scan:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      jobs:
+        scan:
+          docker:
+            - image: circleci/python:3.6.9
+          steps:
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - checkout
+            - dumpsterdiver_scan:
+                directory: << parameters.directory >>
+            - parse
+
+
+  snyk_image_scan:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      jobs:
+        scan:
+          docker:
+            - image: circleci/buildpack-deps:stretch
+          steps:
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - run:
+                name: "[build_and_scan_local_container] [Installer] Clone repo and build image from Dockerfile"
+                command: |
+                  git clone https://github.com/docker/docker-bench-security
+                  docker build -t "dbs:latest" docker-bench-security/.
+            - security/snyk_image_scan:
+                image_name: "dbs:latest"
+            - security/parse
+
+
+  snyk_node_scan:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      jobs:
+        scan:
+          docker:
+            - image: circleci/node:latest
+          steps:
+            - run:
+                name: Clone and install Node applicaiton
+                command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
+            - security/snyk_node_scan
+
+
+  node_audit:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      jobs:
+        scan:
+          docker:
+            - image: circleci/node:latest
+          steps:
+            - run:
+                name: Clone and install Node applicaiton
+                command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
+            - security/node_audit
+            - security/parse
+
+
+  security/secrets:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      workflows:
+        scan:
+          jobs:
+            - security/secrets
+
+
+  security/node:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      workflows:
+        scan:
+          jobs:
+            - security/node
+
+
+  security/container-remote:
+    usage:
+      version: 2.1
+      orbs:
+        security: salidas/security@x.y.z
+      workflows:
+        scan:
+          jobs:
+            - security/container-remote:
+                image_name: "vulnerables/cve-2017-7494:latest"
+
 # THe security orb uses existing orbs to leverage already-coded testing steps.
 orbs:
   anchore: anchore/anchore-engine@1.5.0
@@ -67,6 +218,7 @@ commands:
       - store_artifacts:
           path: << parameters.output_directory >>
 
+
   # Spins up the Anchore engine in preparation for remote/local image scanning commands.
   anchore_start_engine:
     parameters:
@@ -82,6 +234,7 @@ commands:
             TIMEOUT="<< parameters.timeout >>"
             docker run -d --name anchore-engine "anchore/inline-scan:${ANCHORE_VERSION}" start
             docker exec -e TIMEOUT="$TIMEOUT" -it anchore-engine bash -lc 'anchore_ci_tools.py --wait --timeout "$TIMEOUT"'
+
 
   # Leverages Anchore's inline-engine container to pull an image from a remote registry, then compare scan findings
   # against an Anchore security policy.
@@ -133,6 +286,7 @@ commands:
       - store_artifacts:
           path: << parameters.output_directory >>
 
+
   # Leverages Anchore's inline-engine image to scan Docker images that were built locally on the build container(s). 
   anchore_scan_local:
     parameters:
@@ -154,6 +308,9 @@ commands:
       output_directory:
         default: ~/output/anchore
         type: string
+      anchore_version:
+        default: "v0.4.1"
+        type: string
     steps:
       - run:
           name: "[security/anchore_scan_local] [Install] bash, curl"
@@ -170,15 +327,12 @@ commands:
       - run:
           name: "[security/anchore_scan_local] [Run] Anchore scan of local image"
           command: |
-            POLICY_FAILURE="false"
-
-            # Because this is in a run step, I have to use a magic variable to store the Anchore version
-            ANCHORE_VERSION="v0.4.1"
-
+            ANCHORE_VERSION="<< parameters.anchore_version >>"
             TIMEOUT="<< parameters.timeout >>"
-            POLICY_BUNDLE_PATH="<< parameters.policy >>"
             DOCKERFILE_PATH="<< parameters.dockerfile >>"
             IMAGE_NAME="<< parameters.image_name >>"
+            POLICY_BUNDLE_PATH="<< parameters.policy >>"
+            POLICY_FAILURE="false"
 
             run_cmd="curl -s https://ci-tools.anchore.io/inline_scan-${ANCHORE_VERSION} | bash -s -- -r -t $TIMEOUT"
             if $POLICY_FAILURE; then
@@ -520,3 +674,4 @@ jobs:
           password: << parameters.password >>
           registry: << parameters.registry >>
       - parse
+
