@@ -3,7 +3,7 @@ version: 2.1
 
 orbs:
   orb-tools: circleci/orb-tools@2.0.0
-  security: salidas/security@dev:feature-npm-audit
+  security: salidas/security@dev:master
 
 
 jobs:
