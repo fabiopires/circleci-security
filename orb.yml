@@ -164,23 +164,21 @@ commands:
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
             fi
       - run:
-          name: "[security/anchore_scan_local] [Prepare] Set environment variables"
+          name: "[security/anchore_scan_local] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>
+      - run:
+          name: "[security/anchore_scan_local] [Run] Anchore scan of local image"
           command: |
             POLICY_FAILURE="false"
 
-            # Because this is in a command, I have to use a magic variable to store the Anchore version
+            # Because this is in a run step, I have to use a magic variable to store the Anchore version
             ANCHORE_VERSION="v0.4.1"
 
             TIMEOUT="<< parameters.timeout >>"
             POLICY_BUNDLE_PATH="<< parameters.policy >>"
             DOCKERFILE_PATH="<< parameters.dockerfile >>"
             IMAGE_NAME="<< parameters.image_name >>"
-      - run:
-          name: "[security/anchore_scan_local] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
-      - run:
-          name: "[security/anchore_scan_local] [Run] Anchore scan of local image"
-          command: |
+
             run_cmd="curl -s https://ci-tools.anchore.io/inline_scan-${ANCHORE_VERSION} | bash -s -- -r -t $TIMEOUT"
             if $POLICY_FAILURE; then
               run_cmd="$run_cmd -f"
