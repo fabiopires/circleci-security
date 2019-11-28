@@ -84,10 +84,7 @@ commands:
     steps:
       - run:
           name: "[security/dependencies_npm] [Install] audit-ci"
-          command: |
-            if [[ ! $(which audit-ci) ]]; then
-              (set +o pipefail; npm i --save-dev audit-ci || yarn add -D audit-ci)
-            fi
+          command: npm i --save-dev audit-ci
       - run:
           name: "[security/dependencies_npm] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
@@ -125,10 +122,7 @@ commands:
     steps:
       - run:
           name: "[security/dependencies_npm] [Install] audit-ci"
-          command: |
-            if [[ ! $(which audit-ci) ]]; then
-              (set +o pipefail; npm i --save-dev audit-ci || yarn add -D audit-ci)
-            fi
+          command: yarn add -D audit-ci
       - run:
           name: "[security/dependencies_npm] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
@@ -139,4 +133,4 @@ commands:
             #  Remove non-JSON string from start of results file"
             tail -n +2 << parameters.output_directory >>/unfinished_audit-ci.json > << parameters.output_directory >>/results_audit-ci.json
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: << parameters.output_directory >> 
