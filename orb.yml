@@ -55,6 +55,7 @@ commands:
           name: "[security/parse] [Run] circleci-security-parser"
           command: |
             # Clone circleci-security-parser and install its dependencies
+            cd
             git clone https://github.com/salidas/circleci-security-parser
             pip install --user -r circleci-security-parser/requirements.txt
             python3.7 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
