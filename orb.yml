@@ -38,7 +38,7 @@ commands:
         description: "The directory to save parsed tool output to."
     steps:
       - run:
-          name: "[security/parse] [Install] circleci-security-parser dependencies"
+          name: "[security/parse] [Install] Python"
           command: |
             # If Python 3.7 is not available, we'll have to build it manually.
             if [[ ! $(which python3.7) ]]; then
@@ -46,11 +46,7 @@ commands:
               tar -xf Python-3.7.4.tar.xz
               cd Python-3.7.4 && ./configure && make build_all && sudo make altinstall
             fi
-            # Clone circleci-security-parser and install its dependencies
-            git clone https://github.com/salidas/circleci-security-parser
-            # Install pip and circle-security-parser's dependencies
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && sudo python3.7 get-pip.py  
-            pip install --user -r circleci-security-parser/requirements.txt
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           command: |
@@ -58,6 +54,9 @@ commands:
       - run:
           name: "[security/parse] [Run] circleci-security-parser"
           command: |
+            # Clone circleci-security-parser and install its dependencies
+            git clone https://github.com/salidas/circleci-security-parser
+            pip install --user -r circleci-security-parser/requirements.txt
             python3.7 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
