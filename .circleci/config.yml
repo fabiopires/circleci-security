@@ -5,43 +5,19 @@ orbs:
   orb-tools: circleci/orb-tools@2.0.0
   security: salidas/security@dev:master
 
-
 jobs:
-  # This job simulates the local building and security scanning of a Docker image.
-  # The job runs all orb commands that deal with local image scanning.
-  build_and_scan_local_container:
-    docker:
-      - image: circleci/buildpack-deps:stretch
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: "[build_and_scan_local_container] [Installer] Clone repo and build image from Dockerfile"
-          command: |
-            git clone https://github.com/docker/docker-bench-security
-            docker build -t "bad-docky:latest" docker-bench-security/.
-      - security/snyk_image_scan:
-          image_name: "bad-docky:latest"
-      - security/anchore_scan_local:
-          image_name: "bad-docky:latest"
-          dockerfile: "docker-bench-security/Dockerfile"
-          timeout: "600"
-      - security/parse
-
   # This job simulates the installation and security scanning of a node project.
   # The project's dependencies are installed via npm, then all orb commands to do
   # with node project scanning are invoked.
-  build_and_scan_node_with_orb_commands:
+  build_and_scan_npm:
     docker:
       - image: circleci/node:latest
     steps:
       - run:
           name: Clone and install Node applicaiton
           command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
-      - security/snyk_node_scan
-      - security/node_audit
+      - security/dependencies_npm
       - security/parse
-
 
 workflows:
   # The main workflow of this config file aims to test all functionality made available
@@ -55,24 +31,6 @@ workflows:
           orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
           publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
           validate: true
-      # Container image scanning
-      - build_and_scan_local_container:
-          requires:
-            - orb-tools/publish
-      # Testing support for scanning an image hosted on a public registry
-      - security/container-remote:
-          image_name: "vulnerables/cve-2017-7494:latest"
-          timeout: "600"
-          requires:
-            - orb-tools/publish
-      # Secrets detection
-      - security/secrets:
-          requires:
-            - orb-tools/publish  
-      # Node application scanning
-      - build_and_scan_node_with_orb_commands:
-          requires:
-            - orb-tools/publish
-      - security/node:
+      - build_and_scan_npm:
           requires:
             - orb-tools/publish
