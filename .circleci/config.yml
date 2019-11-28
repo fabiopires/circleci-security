@@ -15,7 +15,7 @@ jobs:
     steps:
       - run:
           name: Clone and install Node applicaiton
-          command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install -q
+          command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install
       - security/dependencies_npm
       - security/parse
 
