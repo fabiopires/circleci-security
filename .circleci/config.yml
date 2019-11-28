@@ -22,7 +22,7 @@ jobs:
 workflows:
   # The main workflow of this config file aims to test all functionality made available
   # by the security orb.
-  validate_deploy_and_test_orb_steps:
+  validate_and_deploy_orb:
     jobs:
       # The first job is to check that the syntax of the orb is valid, and then
       # push it to the Circle CI registry.
@@ -30,7 +30,7 @@ workflows:
           orb-path: orb.yml
           orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
           publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
-          validate: true
+          validate: true      
       - build_and_scan_npm:
-          requires:
-            - orb-tools/publish
+              requires:
+                - orb-tools/publish
