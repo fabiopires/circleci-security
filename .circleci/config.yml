@@ -1,23 +1,8 @@
 version: 2.1
 
-
 orbs:
   orb-tools: circleci/orb-tools@2.0.0
   security: salidas/security@dev:master
-
-jobs:
-  # This job simulates the installation and security scanning of a node project.
-  # The project's dependencies are installed via npm, then all orb commands to do
-  # with node project scanning are invoked.
-  build_and_scan_npm:
-    docker:
-      - image: circleci/node:latest
-    steps:
-      - run:
-          name: Clone and install Node applicaiton
-          command: git clone https://github.com/cr0hn/vulnerable-node ~/project && npm install
-      - security/dependencies_npm
-      - security/parse
 
 workflows:
   # The main workflow of this config file aims to test all functionality made available
@@ -30,7 +15,4 @@ workflows:
           orb-path: orb.yml
           orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
           publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
-          validate: true      
-      - build_and_scan_npm:
-              requires:
-                - orb-tools/publish
+          validate: true
