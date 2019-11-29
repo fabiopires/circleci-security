@@ -128,7 +128,7 @@ commands:
       - run:
           name: "[security/dependencies_yarn] [Run] audit-ci"
           command: |
-            cd << parameters.target_directory >> && $(audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci.json || true)
+            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci.json || true)
             #  Remove non-JSON string from start of results file"
             tail -n +3 << parameters.output_directory >>/unfinished_audit-ci.json > << parameters.output_directory >>/results_audit-ci.json
       - store_artifacts:
