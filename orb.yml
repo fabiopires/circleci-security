@@ -120,13 +120,13 @@ commands:
         description: Additional CLI arguments that should be run with
     steps:
       - run:
-          name: "[security/dependencies_npm] [Install] audit-ci"
-          command: yarn global add audit-ci
+          name: "[security/dependencies_yarn] [Install] audit-ci"
+          command: yarn add -D audit-ci
       - run:
-          name: "[security/dependencies_npm] [Prepare] Create output folder"
+          name: "[security/dependencies_yarn] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
       - run:
-          name: "[security/dependencies_npm] [Run] audit-ci"
+          name: "[security/dependencies_yarn] [Run] audit-ci"
           command: |
             cd << parameters.target_directory >> && $(audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci.json || true)
             #  Remove non-JSON string from start of results file"
