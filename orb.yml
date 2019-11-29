@@ -121,7 +121,7 @@ commands:
     steps:
       - run:
           name: "[security/dependencies_npm] [Install] audit-ci"
-          command: yarn global add  audit-ci
+          command: yarn global add audit-ci
       - run:
           name: "[security/dependencies_npm] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
