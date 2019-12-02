@@ -62,7 +62,42 @@ commands:
       - store_artifacts:
           path: << parameters.output_directory >>
 
-  # Leverages audit-ci for dependencies_npm
+  # Leverages the official snyk CircleCI orb to find node project vulnerabilities
+  dependencies_snyk:
+    parameters:
+      token:
+        default: SNYK_TOKEN
+        type: string
+        description: The name of the environment variable storing the snyk.io API token.
+      output_directory:
+        default: ~/output/snyk
+        type: string
+        description: The location to save snyk output to
+    steps:
+      - run:
+          name: "[security/dependencies_snyk] [Install] bash, curl, sudo"
+          command: |
+            if [[ ! $(which bash) ]]; then
+              (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
+            fi
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
+      - run:
+          name: "[security/dependencies_snyk] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>
+      - snyk/scan:
+          fail-on-issues: false
+          monitor-on-build: false
+          token-variable: << parameters.token >>
+          additional-arguments: "--json > << parameters.output_directory >>/results_node_snyk.json"
+      - store_artifacts:
+          path: << parameters.output_directory >>
+
+  # Leverages audit-ci to analyse npm dependencies.
   dependencies_npm:
     parameters:
       threshold:
