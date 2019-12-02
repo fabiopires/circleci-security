@@ -56,8 +56,9 @@ commands:
           command: |
             # Clone circleci-security-parser and install its dependencies
             git clone https://github.com/salidas/circleci-security-parser 
-            pip install --user -r circleci-security-parser/requirements.txt
-            python3.7 circleci-security-parser/main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
+            cd circleci-security-parser
+            pip install --user -r requirements.txt
+            python3.7 main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
 
@@ -90,9 +91,9 @@ commands:
       - run:
           name: "[security/dependencies_npm] [Run] audit-ci"
           command: |
-            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci.json || true)
+            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci-npm.json || true)
             #  Remove non-JSON string from start of results file"
-            tail -n +3 << parameters.output_directory >>/unfinished_audit-ci.json > << parameters.output_directory >>/results_audit-ci.json
+            tail -n +3 << parameters.output_directory >>/unfinished_audit-ci-npm.json > << parameters.output_directory >>/results_audit-ci-npm.json
       - store_artifacts:
           path: << parameters.output_directory >>
 
@@ -128,8 +129,8 @@ commands:
       - run:
           name: "[security/dependencies_yarn] [Run] audit-ci"
           command: |
-            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci.json || true)
+            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci-yarn.json || true)
             #  Remove non-JSON string from start of results file"
-            tail -n +3 << parameters.output_directory >>/unfinished_audit-ci.json > << parameters.output_directory >>/results_audit-ci.json
+            tail -n +3 << parameters.output_directory >>/unfinished_audit-ci-yarn.json > << parameters.output_directory >>/results_audit-ci-yarn.json
       - store_artifacts:
           path: << parameters.output_directory >> 
