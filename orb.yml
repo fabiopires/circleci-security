@@ -196,7 +196,7 @@ commands:
             if [[ ! $(which python3) ]]; then
               (set +o pipefail; apk add python3-dev || apt-get install -y python3-dev || yum install -y python3-dev)
             fi
-            pip install --user -r << parameters.installation_directory >>/requirements.txt
+            pip install --user -r << parameters.dd_directory >>/requirements.txt
       - run:
           name: "[security/secrets_aws] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
