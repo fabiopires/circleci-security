@@ -202,7 +202,7 @@ commands:
       - run:
           name: "[security/secrets_aws] [Run] DumpsterDiver"
           command: |
-            git clone https://github.com/securing/DumpsterDiver << parameters.installation_directory >>
+            git clone https://github.com/securing/DumpsterDiver << parameters.dd_directory >>
             cd << parameters.dd_directory >>
             # Search for AWS Secret Keys
             python DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
