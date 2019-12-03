@@ -198,7 +198,7 @@ commands:
             fi
       - run:
           name: "[security/secrets_aws] [Prepare] Create output folder"
-          command: mkdir -p << paramaters.output_directory >>
+          command: mkdir -p << parameters.output_directory >>
       - run:
           name: "[security/secrets_aws] [Run] DumpsterDiver"
           command: |
