@@ -58,7 +58,8 @@ commands:
             git clone https://github.com/salidas/circleci-security-parser 
             cd circleci-security-parser
             pip install --user -r requirements.txt
-            python3.7 main.py -i << parameters.input_directory>> -o << parameters.output_directory >>
+            # Run the parser. Pass silently in case it fails.
+            (python3.7 main.py -i << parameters.input_directory>> -o << parameters.output_directory >> || true)
       - store_artifacts:
           path: << parameters.output_directory >>
 
