@@ -40,22 +40,16 @@ commands:
       - run:
           name: "[security/parse] [Install] python3-dev"
           command: |
-            # If Python 3.7 is not available, we'll have to build it manually.
-            # if [[ ! $(which python3.7) ]]; then
-            #   curl -O https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tar.xz
-            #   tar -xf Python-3.7.4.tar.xz
-            #   cd Python-3.7.4 && ./configure && make build_all && sudo make altinstall
-            # fi
-            if [[ ! $(which python3) ]]; then
-              (set +o pipefail; apk add python3-dev || apt-get install -y python3-dev || yum install -y python3-dev)
+            If Python 3.7 is not available, we'll have to build it manually.
+            if [[ ! $(which python3.7) ]]; then
+              curl -O https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tar.xz
+              tar -xf Python-3.7.4.tar.xz
+              cd Python-3.7.4 && ./configure && make build_all && sudo make altinstall
             fi
-            if [[ ! $(which pip) ]]; then
-              (set +o pipefail; apk add python3-pip || apt-get install -y python3-pip || yum install -y python3-pip)
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
             fi
-            # if [[ ! $(which curl) ]]; then
-            #   (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
-            # fi
-            # curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && sudo python3 get-pip.py
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && sudo python3 get-pip.py
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           # Don't forget to cd back home!
