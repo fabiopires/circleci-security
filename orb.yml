@@ -189,9 +189,8 @@ commands:
           name: "[security/secrets_aws] [Run] DumpsterDiver"
           command: |
             git clone https://github.com/securing/DumpsterDiver << parameters.dd_directory >>
-            sudo apt-get install python3.6 python3.6-dev python3.6-venv
-            cd << parameters.dd_directory >>
-            venv env
+            sudo apt-get install python3.6
+            python3.6 -m venv env
             source env/bin/activate
             pip3 install --user -r requirements.txt
             # Search for AWS Secret Keys
