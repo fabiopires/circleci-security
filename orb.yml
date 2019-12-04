@@ -52,7 +52,7 @@ commands:
             # Clone circleci-security-parser and install its dependencies
             git clone https://github.com/salidas/circleci-security-parser 
             cd circleci-security-parser
-            pip install --user -r requirements.txt
+            pip3 install --user -r requirements.txt
             # Run the parser. Pass silently in case it fails.
             (python3 main.py -i << parameters.input_directory>> -o << parameters.output_directory >> || true)
       - store_artifacts:
@@ -189,7 +189,7 @@ commands:
           name: "[security/secrets_aws] [Run] DumpsterDiver"
           command: |
             git clone https://github.com/securing/DumpsterDiver << parameters.dd_directory >>
-            sudo apt-get install python3-dev && pip install --user -r << parameters.dd_directory >>/requirements.txt
+            sudo apt-get install python3-dev && pip3 install --user -r << parameters.dd_directory >>/requirements.txt
             cd << parameters.dd_directory >>
             # Search for AWS Secret Keys
             python3.6 DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
