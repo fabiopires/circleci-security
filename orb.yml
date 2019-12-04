@@ -195,18 +195,9 @@ commands:
         description: The location to save output to
     steps:
       - run:
-          name: "[security/secrets_aws] [Install] python3-dev"
+          name: "[security/secrets_aws] [Install] DumpsterDiver - Python 3.6.9"
           command: |
-            # Check if we can leverage a package manager to install Python 3.
-            if [[ ! $(which python3) ]]; then
-              (set +o pipefail; apk add python3-dev || apt-get install -y python3-dev || yum install -y python3-dev)
-            fi
-            # If Python 3 is still not available, we'll have to build it manually.
-            if [[ ! $(which python3) ]]; then
-              curl -O https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tar.xz
-              tar -xf Python-3.7.4.tar.xz
-              cd Python-3.7.4 && ./configure && make build_all && sudo make altinstall
-            fi
+            # For DumpsterDiver, we need Python3.6. eurgh.
             if [[ ! $(which curl) ]]; then
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
             fi
@@ -221,6 +212,6 @@ commands:
             pip install --user -r << parameters.dd_directory >>/requirements.txt
             cd << parameters.dd_directory >>
             # Search for AWS Secret Keys
-            python DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
+            python3.6 DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
       - store_artifacts:
           path: << parameters.output_directory >>
