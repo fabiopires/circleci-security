@@ -3,17 +3,17 @@ description: Security tooling steps
 
 # THe security orb uses existing orbs to leverage already-coded testing steps.
 orbs:
-  anchore: anchore/anchore-engine@1.5.0
+  # anchore: anchore/anchore-engine@1.5.0
   snyk: snyk/snyk@0.0.8
 
 
-executors:
-  container_builder:
-    description: Simple base image with orb-specific variables set
-    docker:
-    - image: circleci/buildpack-deps:stretch
-    environment:
-      ANCHORE_VERSION: "v0.4.1"
+# executors:
+#   container_builder:
+#     description: Simple base image with orb-specific variables set
+#     docker:
+#     - image: circleci/buildpack-deps:stretch
+#     environment:
+#       ANCHORE_VERSION: "v0.4.1"
 
 
 # Most orb commands follow a common step format:
@@ -59,7 +59,7 @@ commands:
           path: << parameters.output_directory >>
 
   # Leverages the official snyk CircleCI orb to find node project vulnerabilities
-  dependencies_snyk:
+  dependencies_snyk_node:
     parameters:
       token:
         default: SNYK_TOKEN
@@ -94,106 +94,108 @@ commands:
           path: << parameters.output_directory >>
 
   # Leverages audit-ci to analyse npm dependencies.
-  dependencies_npm:
-    parameters:
-      threshold:
-        default: low
-        type: string
-        description: The severity at which audit-ci will begin to report issues
-      target_directory:
-        default: ~/project
-        type: string
-        description: The location of the node project to be scanned
-      output_directory:
-        default: ~/output/audit-ci
-        type: string
-        description: The location to save the audit output to
-      additional_arguments:
-        default: ""
-        type: string
-        description: Additional CLI arguments that should be run with
-    steps:
-      - run:
-          name: "[security/dependencies_npm] [Install] audit-ci"
-          command: npm i --save-dev audit-ci
-      - run:
-          name: "[security/dependencies_npm] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
-      - run:
-          name: "[security/dependencies_npm] [Run] audit-ci"
-          command: |
-            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci-npm.json || true)
-            #  Remove non-JSON string from start of results file"
-            tail -n +3 << parameters.output_directory >>/unfinished_audit-ci-npm.json > << parameters.output_directory >>/results_audit-ci-npm.json
-      - store_artifacts:
-          path: << parameters.output_directory >>
+  # dependencies_npm:
+  #   parameters:
+  #     threshold:
+  #       default: low
+  #       type: string
+  #       description: The severity at which audit-ci will begin to report issues
+  #     target_directory:
+  #       default: ~/project
+  #       type: string
+  #       description: The location of the node project to be scanned
+  #     output_directory:
+  #       default: ~/output/audit-ci
+  #       type: string
+  #       description: The location to save the audit output to
+  #     additional_arguments:
+  #       default: ""
+  #       type: string
+  #       description: Additional CLI arguments that should be run with
+  #   steps:
+  #     - run:
+  #         name: "[security/dependencies_npm] [Install] audit-ci"
+  #         command: npm i --save-dev audit-ci
+  #     - run:
+  #         name: "[security/dependencies_npm] [Prepare] Create output folder"
+  #         command: mkdir -p << parameters.output_directory >>
+  #     - run:
+  #         name: "[security/dependencies_npm] [Run] audit-ci"
+  #         command: |
+  #           cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci-npm.json || true)
+  #           #  Remove non-JSON string from start of results file"
+  #           tail -n +3 << parameters.output_directory >>/unfinished_audit-ci-npm.json > << parameters.output_directory >>/results_audit-ci-npm.json
+  #     - store_artifacts:
+  #         path: << parameters.output_directory >>
 
   # Leverages audit-ci exactly like dependencies_npm.
   # I hate this, but there will be code duplication until I can find out a way to make this
   # modular (i.e. defining audit_ci but having dependencies_yarn and dependencies_npm
   # link to them)
-  dependencies_yarn:
-    parameters:
-      threshold:
-        default: low
-        type: string
-        description: The severity at which audit-ci will begin to report issues
-      target_directory:
-        default: ~/project
-        type: string
-        description: The location of the node project to be scanned
-      output_directory:
-        default: ~/output/audit-ci
-        type: string
-        description: The location to save the audit output to
-      additional_arguments:
-        default: ""
-        type: string
-        description: Additional CLI arguments that should be run with
-    steps:
-      - run:
-          name: "[security/dependencies_yarn] [Install] audit-ci"
-          command: yarn add -D audit-ci
-      - run:
-          name: "[security/dependencies_yarn] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
-      - run:
-          name: "[security/dependencies_yarn] [Run] audit-ci"
-          command: |
-            cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci-yarn.json || true)
-            #  Remove non-JSON string from start of results file"
-            tail -n +3 << parameters.output_directory >>/unfinished_audit-ci-yarn.json > << parameters.output_directory >>/results_audit-ci-yarn.json
-      - store_artifacts:
-          path: << parameters.output_directory >> 
+  # dependencies_yarn:
+  #   parameters:
+  #     threshold:
+  #       default: low
+  #       type: string
+  #       description: The severity at which audit-ci will begin to report issues
+  #     target_directory:
+  #       default: ~/project
+  #       type: string
+  #       descriptiochn: The lohcation of the node project to be scanned
+  #     output_directory:
+  #       default: ~/output/audit-ci
+  #       type: string
+  #       description: The location to save the audit output to
+  #     additional_arguments:
+  #       default: ""
+  #       type: string
+  #       description: Additional CLI arguments that should be run with
+  #   steps:
+  #     - run:
+  #         name: "[security/dependencies_yarn] [Install] audit-ci"
+  #         command: yarn add -D audit-ci
+  #     - run:
+  #         name: "[security/dependencies_yarn] [Prepare] Create output folder"
+  #         command: mkdir -p << parameters.output_directory >>
+  #     - run:
+  #         name: "[security/dependencies_yarn] [Run] audit-ci"
+  #         command: |
+  #           cd << parameters.target_directory >> && $(node_modules/audit-ci/bin/audit-ci --<< parameters.threshold >> --report-type full << parameters.additional_arguments >> > << parameters.output_directory >>/unfinished_audit-ci-yarn.json || true)
+  #           #  Remove non-JSON string from start of results file"
+  #           tail -n +3 << parameters.output_directory >>/unfinished_audit-ci-yarn.json > << parameters.output_directory >>/results_audit-ci-yarn.json
+  #     - store_artifacts:
+  #         path: << parameters.output_directory >> 
 
-  # Leverages multiple tools to seach for AWS secret keys.
-  secrets_aws:
-    parameters:
-      directory:
-        default: ~/project
-        type: string
-        description: The location of the project to be scanned
-      dd_directory:
-        default: ~/dumpsterdiver
-        type: string
-        description: The location where DumpsterDiver will be installed
-      output_directory:
-        default: ~/output/dumpsterdiver
-        type: string
-        description: The location to save output to
-    steps:
-      - run:
-          name: "[security/secrets_aws] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
-      - run:
-          name: "[security/secrets_aws] [Run] DumpsterDiver"
-          command: |
-            git clone https://github.com/securing/DumpsterDiver << parameters.dd_directory >>
-            sudo apt-get install python3.6
-            python3.6 -m venv env
-            source env/bin/activate
-            pip3 install --user -r requirements.txt
-            # Search for AWS Secret Keys
-            python3.6 DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
-      - store_artifacts:
-          path: << parameters.output_directory >>
+  # # Leverages burrow to look for hardcoded secrets.
+  # secrets_burrow:
+  #   parameters:
+  #     directory:
+  #       default: ~/project
+  #       type: string
+  #       description: The location of the project to be scanned
+  #     dd_directory:
+  #       default: ~/dumpsterdiver
+  #       type: string
+  #       description: The location where DumpsterDiver will be installed
+  #     output_directory:
+  #       default: ~/output/dumpsterdiver
+  #       type: string
+  #       description: The location to save output to
+  #   steps:
+  #     - run:
+  #         name: "[security/secrets_aws] [Prepare] Create output folder"
+  #         command: mkdir -p << parameters.output_directory >>
+  #     - run:
+  #         name: "[security/secrets_aws] [Run] DumpsterDiver"
+  #         command: |
+  #           git clone https://github.com/securing/DumpsterDiver << parameters.dd_directory >>
+  #           # sudo apt-get install software-properties-common
+  #           # sudo add-apt-repository ppa:deadsnakes/ppa
+  #           sudo apt-get install python3.6
+  #           python3.6 -m venv env
+  #           source env/bin/activate
+  #           pip3 install --user -r requirements.txt
+  #           # Search for AWS Secret Keys
+  #           python3.6 DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
+  #     - store_artifacts:
+  #         path: << parameters.output_directory >>
