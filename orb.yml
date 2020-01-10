@@ -71,7 +71,7 @@ commands:
         description: The location to save snyk output to
     steps:
       - run:
-          name: "[security/dependencies_snyk] [Install] bash, curl, sudo"
+          name: "[security/dependencies_snyk_node] [Install] bash, curl, sudo"
           command: |
             if [[ ! $(which bash) ]]; then
               (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
@@ -83,13 +83,13 @@ commands:
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
-          name: "[security/dependencies_snyk] [Prepare] Create output folder"
+          name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
       - snyk/scan:
           fail-on-issues: false
           monitor-on-build: false
           token-variable: << parameters.token >>
-          additional-arguments: "--json > << parameters.output_directory >>/results_node_snyk.json"
+          additional-arguments: "--json > << parameters.output_directory >>/results_snyk_node.json"
       - store_artifacts:
           path: << parameters.output_directory >>
 
