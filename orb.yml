@@ -93,6 +93,40 @@ commands:
       - store_artifacts:
           path: << parameters.output_directory >>
 
+  # Leverages burrow to look for hardcoded secrets.
+  secrets_burrow:
+    parameters:
+      directory:
+        default: ~/project
+        type: string
+        description: The location of the project to be scanned
+      dd_directory:
+        default: ~/dumpsterdiver
+        type: string
+        description: The location where DumpsterDiver will be installed
+      output_directory:
+        default: ~/output/dumpsterdiver
+        type: string
+        description: The location to save output to
+    steps:
+      - run:
+          name: "[security/secrets_aws] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>
+      - run:
+          name: "[security/secrets_aws] [Run] DumpsterDiver"
+          command: |
+            git clone https://github.com/securing/DumpsterDiver << parameters.dd_directory >>
+            # sudo apt-get install software-properties-common
+            # sudo add-apt-repository ppa:deadsnakes/ppa
+            sudo apt-get install python3.6
+            python3.6 -m venv env
+            source env/bin/activate
+            pip3 install --user -r requirements.txt
+            # Search for AWS Secret Keys
+            python3.6 DumpsterDiver.py -o << parameters.output_directory >>/results_dumpsterdiver_aws_secret_keys.json -p << parameters.directory >> --min-key 40 --max-key 40 --entropy 4.3
+      - store_artifacts:
+          path: << parameters.output_directory >>
+
   # Leverages audit-ci to analyse npm dependencies.
   # dependencies_npm:
   #   parameters:
