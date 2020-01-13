@@ -114,7 +114,7 @@ commands:
             sudo apt-get install python3-dev
             sudo apt-get install python3-pip
       - run:
-          name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
+          name: "[security/secrets_burrow] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
       - run:
           name: "[security/secrets_burrow] [Run] burrow"
