@@ -110,7 +110,7 @@ commands:
     steps:
       - run:
           name: "[security/secrets_burrow] [Install] Python 3.6"
-          command: suod apt-get install python3
+          command: sudo apt-get install python3
       - run:
           name: "[security/secrets_burrow] [Run] burrow"
           command: |
