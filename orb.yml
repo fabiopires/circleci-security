@@ -114,15 +114,15 @@ commands:
             sudo apt-get install python3-dev
             sudo apt-get install python3-pip
       - run:
+          name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>
+      - run:
           name: "[security/secrets_burrow] [Run] burrow"
           command: |
             git clone https://github.com/salidas/burrow << parameters.burrow_directory >>
             cd << parameters.burrow_directory >>
             pip3 install --user -r requirements.txt
-            python3 burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >> 
-      - run:
-          name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
+            python burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
           
