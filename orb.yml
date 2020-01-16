@@ -125,7 +125,61 @@ commands:
             python burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
-          
+
+# JOBS START HERE
+jobs:
+  secrets:
+    docker:
+      - image: circleci/python:latest
+    parameters:
+      target_directory:
+        default: ~/project
+        type: string
+        description: The directory to be scanned with secrets tools
+    steps:
+      - setup_remove_docker:
+          docker_layer_caching: true
+      - checkout
+      - secrets_burrow
+      - parse
+  node:
+    docker:
+      - image: circleci/node:latest
+    parameters:
+      target_directory:
+        default: ~/project
+        type: string
+        description: The directory to be scanned with secrets tools\
+      yarn:
+        default: false
+        type: boolean
+        description: Flag used if the project requires Yarn
+      package_manager:
+        default: "npm"
+        type: string
+        description: The manager used to install node packages
+    steps:
+      - setup_remove_docker:
+          docker_layer_caching: true
+      - checkout
+      - when:
+          condition:
+          steps:
+            - run:
+                name: "[security/node] [Install] Node packages via npm"
+                command: "cd << parameters.target_directory >> && yarn install && cd"
+      - unless:
+          condition: << parameters.yarn >>
+          steps:
+            - run:
+                name: "[security/node] [Install] Node packages via Yarn"
+                command: "cd << parameters.target_directory >> && yarn install && cd"
+      - secrets_burrow
+      - dependencies_snyk_node
+      - parse
+
+        
+     
   # Leverages audit-ci to analyse npm dependencies.
   # dependencies_npm:
   #   parameters:
