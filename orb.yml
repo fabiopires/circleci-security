@@ -182,11 +182,9 @@ jobs:
                 name: "[security/node] [Install] Node packages via Yarn"
                 command: "cd << parameters.target_directory >> && yarn install && cd"
       - secrets_burrow:
-          parameters:
-            target_directory: << parameters.target_directory >>
+          target_directory: << parameters.target_directory >>
       - dependencies_snyk_node:
-          parameters:
-            target_directory: << parameters.target_directory >>
+          target_directory: << parameters.target_directory >>
       - parse
 
         
