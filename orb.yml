@@ -122,7 +122,7 @@ commands:
             git clone https://github.com/salidas/burrow << parameters.burrow_directory >>
             cd << parameters.burrow_directory >>
             pip3 install --user -r requirements.txt
-            python burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>
+            python3 burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>
       - store_artifacts:
           path: << parameters.output_directory >>
 
