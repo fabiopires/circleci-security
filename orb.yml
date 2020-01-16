@@ -159,7 +159,7 @@ jobs:
         type: string
         description: The manager used to install node packages
     steps:
-      - setup_remove_docker:
+      - setup_remote_docker:
           docker_layer_caching: true
       - checkout
       - when:
