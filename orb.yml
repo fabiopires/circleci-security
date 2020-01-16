@@ -69,6 +69,10 @@ commands:
         default: ~/output/snyk
         type: string
         description: The location to save snyk output to
+      target_directory:
+        default: ~/project
+        type: string
+        description: The directory to be scanned
     steps:
       - run:
           name: "[security/dependencies_snyk_node] [Install] bash, curl, sudo"
@@ -85,6 +89,9 @@ commands:
       - run:
           name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
+      - run:
+          name: "[security/dependencies_snyk_node] [Prepare] cd into target directory"
+          command: "cd << parameters.target_directory >>"
       - snyk/scan:
           fail-on-issues: false
           monitor-on-build: false
@@ -174,8 +181,12 @@ jobs:
             - run:
                 name: "[security/node] [Install] Node packages via Yarn"
                 command: "cd << parameters.target_directory >> && yarn install && cd"
-      - secrets_burrow
-      - dependencies_snyk_node
+      - secrets_burrow:
+          parameters:
+            target_directory: << parameters.target_directory >>
+      - dependencies_snyk_node:
+          parameters:
+            target_directory: << parameters.target_directory >>
       - parse
 
         
