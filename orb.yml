@@ -137,7 +137,7 @@ jobs:
         type: string
         description: The directory to be scanned with secrets tools
     steps:
-      - setup_remove_docker:
+      - setup_remote_docker:
           docker_layer_caching: true
       - checkout
       - secrets_burrow
