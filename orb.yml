@@ -138,7 +138,7 @@ jobs:
         description: The directory to be scanned with secrets tools
     steps:
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - checkout
       - secrets_burrow
       - parse
@@ -160,7 +160,7 @@ jobs:
         description: The manager used to install node packages
     steps:
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - checkout
       - when:
           condition:
