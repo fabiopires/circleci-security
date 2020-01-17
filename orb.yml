@@ -156,30 +156,26 @@ jobs:
       target_directory:
         default: ~/project
         type: string
-        description: The directory to be scanned with secrets tools\
+        description: The directory to be scanned with secrets tools
       yarn:
         default: false
         type: boolean
         description: Flag used if the project requires Yarn
-      package_manager:
-        default: "npm"
-        type: string
-        description: The manager used to install node packages
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
       - checkout
       - when:
-          condition:
+          condition: << parameters.yarn >>
           steps:
             - run:
-                name: "[security/node] [Install] Node packages via npm"
+                name: "[security/node] [Install] Node packages via yarn"
                 command: "cd << parameters.target_directory >> && yarn install && cd"
       - unless:
           condition: << parameters.yarn >>
           steps:
             - run:
-                name: "[security/node] [Install] Node packages via Yarn"
+                name: "[security/node] [Install] Node packages via npm"
                 command: "cd << parameters.target_directory >> && yarn install && cd"
       - secrets_burrow:
           target_directory: << parameters.target_directory >>
