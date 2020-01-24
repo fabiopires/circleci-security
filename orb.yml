@@ -170,7 +170,7 @@ commands:
           command: mkdir -p << parameters.output_directory >>
       - run:
           name: "[security/golang_nancy] [Run] nancy"
-          command: << parameters.install_directory >>/nancy << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/results_nancy_unformatted
+          command: << parameters.install_directory >>/nancy << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/results_nancy_unformatted || true
       - store_artifacts:
           path: << parameters.output_directory >>
 
