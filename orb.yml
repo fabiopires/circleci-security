@@ -32,10 +32,6 @@ commands:
         default: ~/output
         type: string
         description: "The directory containing raw tool output"
-      output_directory:
-        default: ~/output/parsed_output
-        type: string
-        description: "The directory to save parsed tool output to."
     steps:
       - run:
           name: "[security/parse] [Install] Python 3, pip"
@@ -45,18 +41,18 @@ commands:
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           # Don't forget to cd back home!
-          command: cd ~ && mkdir -p << parameters.output_directory >> 
+          command: cd ~ && mkdir -p << parameters.input_directory >>/parsed_output
       - run:
           name: "[security/parse] [Run] circleci-security-parser"
           command: |
             # Clone circleci-security-parser and install its dependencies
-            git clone https://github.com/salidas/circleci-security-parser 
+            git clone https://github.com/salidas/circleci-security-parser
             cd circleci-security-parser
             pip3 install --user -r requirements.txt
             # Run the parser. Pass silently in case it fails.
-            (python3 main.py -i << parameters.input_directory>> -o << parameters.output_directory >> || true)
+            python3 main.py -i << parameters.input_directory >>/parsed_output || true
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: << parameters.input_directory >>/parsed_output
 
   # Leverages the official snyk CircleCI orb to find node project vulnerabilities
   dependencies_snyk_node:
@@ -199,13 +195,22 @@ jobs:
       - run:
           name: "[securty/golang] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
+      - secrets_burrow:
+        target_directory: << parameters.target_directory >>
+        output_directory: << parameters.output_directory >>
       - golang_nancy:
           target_directory: << parameters.target_directory >>
+          output_directory: << parameters.output_directory >>
       - parse
+          input_directory: << parameters.output_directory >>
   node:
     docker:
       - image: circleci/node:latest
     parameters:
+      output_directory:
+        default: ~/output
+        type: string
+        description: The directory to save scan and parse output to
       target_directory:
         default: ~/project
         type: string
@@ -232,13 +237,20 @@ jobs:
                 command: "cd << parameters.target_directory >> && yarn install && cd"
       - secrets_burrow:
           target_directory: << parameters.target_directory >>
+          output_directory: << parameters.output_directory >>
       - dependencies_snyk_node:
           target_directory: << parameters.target_directory >>
+          output_directory: << parameters.output_directory >>
       - parse
+          input_directory: << parameters.output_directory >>
   secrets:
     docker:
       - image: circleci/python:latest
     parameters:
+      output_directory:
+        default: ~/output
+        type: string
+        description: The directory to save scan and parse output to
       target_directory:
         default: ~/project
         type: string
@@ -247,8 +259,11 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - checkout
-      - secrets_burrow
+      - secrets_burrow:
+          target_directory: << parameters.target_directory >>
+          output_directory: << parameters.output_directory >>
       - parse
+          input_directory: << parameters.output_directory >>
 
         
      
