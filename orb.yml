@@ -28,7 +28,7 @@ commands:
   # csv.
   parse:
     parameters:
-      input_directory:
+      output_directory:
         default: ~/output
         type: string
         description: "The directory containing raw tool output"
@@ -41,7 +41,7 @@ commands:
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           # Don't forget to cd back home!
-          command: cd ~ && mkdir -p << parameters.input_directory >>/parsed_output
+          command: cd ~ && mkdir -p << parameters.output_directory >>/parsed_output
       - run:
           name: "[security/parse] [Run] circleci-security-parser"
           command: |
@@ -50,9 +50,9 @@ commands:
             cd circleci-security-parser
             pip3 install --user -r requirements.txt
             # Run the parser. Pass silently in case it fails.
-            python3 main.py -i << parameters.input_directory >>/parsed_output || true
+            python3 main.py -i << parameters.output_directory >>/parsed_output || true
       - store_artifacts:
-          path: << parameters.input_directory >>/parsed_output
+          path: << parameters.output_directory >>/parsed_output
 
   # Leverages the official snyk CircleCI orb to find node project vulnerabilities
   dependencies_snyk_node:
@@ -202,7 +202,7 @@ jobs:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - parse:
-          input_directory: << parameters.output_directory >>
+          output_directory: << parameters.output_directory >>
   node:
     docker:
       - image: circleci/node:latest
@@ -242,7 +242,7 @@ jobs:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - parse:
-          input_directory: << parameters.output_directory >>
+          output_directory: << parameters.output_directory >>
   secrets:
     docker:
       - image: circleci/python:latest
@@ -263,7 +263,7 @@ jobs:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - parse:
-          input_directory: << parameters.output_directory >>
+          output_directory: << parameters.output_directory >>
 
         
      
