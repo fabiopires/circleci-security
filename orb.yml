@@ -167,7 +167,7 @@ commands:
           command: |
             cd ~
             NANCY_VERSION=$(curl https://github.com/sonatype-nexus-community/nancy/releases/latest -L | grep latest -A6 | grep "title" | cut -d '"' -f6)
-            curl -s -L https://github.com/sonatype-nexus-community/nancy/releases/download/$NANCY_VERSION/nancy-linux.amd64-$NANCY_VERSION -o "<< parameters.install_directory >>/nancy"
+            curl -s -L https://github.com/sonatype-nexus-community/nancy/releases/download/$NANCY_VERSION/nancy-linux.amd64-$NANCY_VERSION > << parameters.install_directory >>/nancy
             chmod +x << parameters.install_directory >>/nancy
       - run:
           name: "[security/golang_nancy] [Prepare] Create output folder"
