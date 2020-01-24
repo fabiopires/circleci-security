@@ -196,8 +196,8 @@ jobs:
           name: "[securty/golang] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
       - secrets_burrow:
-        target_directory: << parameters.target_directory >>
-        output_directory: << parameters.output_directory >>
+          target_directory: << parameters.target_directory >>
+          output_directory: << parameters.output_directory >>
       - golang_nancy:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
