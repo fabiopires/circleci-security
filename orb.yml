@@ -133,21 +133,70 @@ commands:
       - store_artifacts:
           path: << parameters.output_directory >>
 
+
+  golang_nancy:
+    parameters:
+      package_file:
+        default: "go.sum"
+        type: string
+        description: "The file to be targetted by nancy. This can be either go.sum or Gopkg.lock; support for other managers depends on nancy
+      install_directory:
+        default: ~/nancy
+        type: string
+        description: The location to save nancy to
+      output_directory:
+        default: ~/output/golang_nancy
+        type: string
+        description: The directory to send nancy output to
+      target_directory:
+        default: ~/project
+        type: string
+        description: The directory to be scanned with nancy
+    steps:
+      - run:
+          name: "[security/golang_nancy] [Install] curl, wget"
+          command: |
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+      - run:
+          name: "[security/golang_nancy] [Prepare] Create nancy tool folder"
+          command: mkdir -p << parameters.install_directory >>
+      - run:
+          name: "[security/golang_nancy] [Install] nancy"
+          command: |
+            cd ~
+            NANCY_VERSION=$(curl https://github.com/sonatype-nexus-community/nancy/releases/latest -L | grep latest -A6 | grep "title" | cut -d '"' -f6)
+            curl -s -L https://github.com/sonatype-nexus-community/nancy/releases/download/$NANCY_VERSION/nancy-linux.amd64-$NANCY_VERSION -o "<< parameters.install_directory >>/nancy"
+            chmod +x << parameters.install_directory >>/nancy
+      - run:
+          name: "[security/golang_nancy] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>
+      - run:
+          name: "[security\golang_nancy] [Run] nancy"
+          command: << parameters.install_directory >>/nancy << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/results_nancy_unformatted
+      - store_artifacts:
+          path: << parameters.output_directory >>
+
 # JOBS START HERE
 jobs:
-  secrets:
+  golang:
     docker:
-      - image: circleci/python:latest
+      - image: circleci/golang:latest
     parameters:
       target_directory:
         default: ~/project
         type: string
-        description: The directory to be scanned with secrets tools
+        description: The directory containing the Golang project to be scanned
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
       - checkout
-      - secrets_burrow
+      - run:
+          name: "[securty/golang] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>
+      - gosec:
+          target_directory: << parameters.target_directory >>
       - parse
   node:
     docker:
@@ -181,6 +230,20 @@ jobs:
           target_directory: << parameters.target_directory >>
       - dependencies_snyk_node:
           target_directory: << parameters.target_directory >>
+      - parse
+  secrets:
+    docker:
+      - image: circleci/python:latest
+    parameters:
+      target_directory:
+        default: ~/project
+        type: string
+        description: The directory to be scanned with secrets tools
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - checkout
+      - secrets_burrow
       - parse
 
         
