@@ -184,6 +184,10 @@ jobs:
     docker:
       - image: circleci/golang:latest
     parameters:
+      output_directory:
+        default: ~/output
+        type: string
+        description: The directory to save scan and parse output to
       target_directory:
         default: ~/project
         type: string
