@@ -139,7 +139,7 @@ commands:
       package_file:
         default: "go.sum"
         type: string
-        description: "The file to be targetted by nancy. This can be either go.sum or Gopkg.lock; support for other managers depends on nancy
+        description: "The file to be targetted by nancy. This can be either go.sum or Gopkg.lock; support for other managers depends on nancy"
       install_directory:
         default: ~/nancy
         type: string
