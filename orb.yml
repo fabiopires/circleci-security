@@ -201,7 +201,7 @@ jobs:
       - golang_nancy:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
-      - parse
+      - parse:
           input_directory: << parameters.output_directory >>
   node:
     docker:
@@ -241,7 +241,7 @@ jobs:
       - dependencies_snyk_node:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
-      - parse
+      - parse:
           input_directory: << parameters.output_directory >>
   secrets:
     docker:
@@ -262,7 +262,7 @@ jobs:
       - secrets_burrow:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
-      - parse
+      - parse:
           input_directory: << parameters.output_directory >>
 
         
