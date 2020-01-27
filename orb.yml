@@ -166,7 +166,7 @@ commands:
           name: "[security/golang_gosec] [Run] gosec"
           command: |
             cd << parameters.output_directory >>/golang_gosec
-            << parameters.install_directory >>/bin/gosec -fmt=json -out=results_gosec.json << parameters.target_directory >>/...
+            << parameters.install_directory >>/bin/gosec -fmt=json -out=results_gosec.json << parameters.target_directory >>/... || true
       - store_artifacts:
           path: << parameters.output_directory >>
 
