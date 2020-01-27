@@ -50,7 +50,7 @@ commands:
             cd circleci-security-parser
             pip3 install --user -r requirements.txt
             # Run the parser. Pass silently in case it fails.
-            python3 main.py -i << parameters.output_directory >>/parsed_output || true
+            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output || true
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
 
@@ -62,7 +62,7 @@ commands:
         type: string
         description: The name of the environment variable storing the snyk.io API token.
       output_directory:
-        default: ~/output/snyk
+        default: ~/output
         type: string
         description: The location to save snyk output to
       target_directory:
@@ -84,7 +84,7 @@ commands:
             fi
       - run:
           name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
+          command: mkdir -p << parameters.output_directory >>/snyk
       - run:
           name: "[security/dependencies_snyk_node] [Prepare] cd into target directory"
           command: "cd << parameters.target_directory >>"
@@ -92,7 +92,7 @@ commands:
           fail-on-issues: false
           monitor-on-build: false
           token-variable: << parameters.token >>
-          additional-arguments: "--json > << parameters.output_directory >>/results_snyk_node.json"
+          additional-arguments: "--json > << parameters.output_directory >>/snyk/results_snyk_node.json"
       - store_artifacts:
           path: << parameters.output_directory >>
 
@@ -103,7 +103,7 @@ commands:
         type: string
         description: The location to install burrow
       output_directory:
-        default: ~/output/burrow
+        default: ~/output
         type: string
         description: The location to save burrow output to
       target_directory:
@@ -118,14 +118,53 @@ commands:
             sudo apt-get install python3-pip
       - run:
           name: "[security/secrets_burrow] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
+          command: mkdir -p << parameters.output_directory >>/burrow
       - run:
           name: "[security/secrets_burrow] [Run] burrow"
           command: |
             git clone https://github.com/salidas/burrow << parameters.burrow_directory >>
             cd << parameters.burrow_directory >>
             pip3 install --user -r requirements.txt
-            python3 burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>
+            python3 burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>/burrow
+      - store_artifacts:
+          path: << parameters.output_directory >>
+
+
+  golang_gosec:
+    parameters:
+      install_directory:
+        default: ~/gosec
+        type: string
+        description: The location to save gosec to
+      output_directory:
+        default: ~/output
+        type: string
+        description: The location to save gosec output to
+      target_directory:
+        default: ~/project
+        type: string
+        description: The location of the project to scan gosec with
+    steps:
+      - run:
+          name: "[security/golang_gosec] [Install] curl"
+          command: |
+          if [[ ! $(which curl) ]]; then
+            (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+          fi
+      - run:
+          name: "[security/golang_gosec] [Prepare] Create gosec tool folder"
+          command: mkdir -p << parameters.install_directory >>
+      - run:
+          name: "[security/golang_gosec] [Install] gosec"
+          command: |
+          cd << parameters.install_directory >>
+          curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s latest
+      - run:
+          name: "[security/golang_gosec] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>/golang_gosec
+      - run:
+          name: "[security/golang_gosec] [Run] gosec"
+          command: << parameters.install_directory >>/bin/gosec -fmt=json -out=<< parameters.output_directory >>/golang_gosec/results_gosec.json << parameters.target_directory >>/...
       - store_artifacts:
           path: << parameters.output_directory >>
 
@@ -141,7 +180,7 @@ commands:
         type: string
         description: The location to save nancy to
       output_directory:
-        default: ~/output/golang_nancy
+        default: ~/output
         type: string
         description: The directory to send nancy output to
       target_directory:
@@ -150,7 +189,7 @@ commands:
         description: The directory to be scanned with nancy
     steps:
       - run:
-          name: "[security/golang_nancy] [Install] curl, wget"
+          name: "[security/golang_nancy] [Install] curl"
           command: |
             if [[ ! $(which curl) ]]; then
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
@@ -167,10 +206,10 @@ commands:
             chmod +x << parameters.install_directory >>/nancy
       - run:
           name: "[security/golang_nancy] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
+          command: mkdir -p << parameters.output_directory >>/nancy
       - run:
           name: "[security/golang_nancy] [Run] nancy"
-          command: << parameters.install_directory >>/nancy << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/results_nancy_unformatted || true
+          command: << parameters.install_directory >>/nancy << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/nancy/results_nancy_unformatted || true
       - store_artifacts:
           path: << parameters.output_directory >>
 
