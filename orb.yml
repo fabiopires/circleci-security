@@ -148,17 +148,17 @@ commands:
       - run:
           name: "[security/golang_gosec] [Install] curl"
           command: |
-          if [[ ! $(which curl) ]]; then
-            (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
-          fi
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
       - run:
           name: "[security/golang_gosec] [Prepare] Create gosec tool folder"
           command: mkdir -p << parameters.install_directory >>
       - run:
           name: "[security/golang_gosec] [Install] gosec"
           command: |
-          cd << parameters.install_directory >>
-          curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s latest
+            cd << parameters.install_directory >>
+            curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s latest
       - run:
           name: "[security/golang_gosec] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>/golang_gosec
@@ -235,6 +235,9 @@ jobs:
           name: "[securty/golang] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
       - secrets_burrow:
+          target_directory: << parameters.target_directory >>
+          output_directory: << parameters.output_directory >>
+      - golang_gosec:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - golang_nancy:
