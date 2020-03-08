@@ -5,6 +5,8 @@ description: Security tooling steps
 orbs:
   # anchore: anchore/anchore-engine@1.5.0
   snyk: snyk/snyk@0.0.8
+  aws-s3: circleci/aws-s3@1.0.13
+
 
 
 # executors:
@@ -28,6 +30,10 @@ commands:
   # csv.
   parse:
     parameters:
+      fail_threshold:
+        default: high
+        type: string
+        description: "The minimum threshold that the parser will fail on"
       output_directory:
         default: ~/output
         type: string
@@ -49,8 +55,8 @@ commands:
             git clone https://github.com/salidas/circleci-security-parser
             cd circleci-security-parser
             pip3 install --user -r requirements.txt
-            # Run the parser. Pass silently in case it fails.
-            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output || true
+            # Run the parser.
+            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=<< parameters.fail_threshold >>
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
 
