@@ -31,7 +31,7 @@ commands:
   parse:
     parameters:
       fail_threshold:
-        default: high
+        default: ""
         type: string
         description: "The minimum threshold that the parser will fail on"
       output_directory:
@@ -49,14 +49,26 @@ commands:
           # Don't forget to cd back home!
           command: cd ~ && mkdir -p << parameters.output_directory >>/parsed_output
       - run:
-          name: "[security/parse] [Run] circleci-security-parser"
+          name: "[security/parse] [Install] circleci-security-parser"
           command: |
             # Clone circleci-security-parser and install its dependencies
             git clone https://github.com/salidas/circleci-security-parser
             cd circleci-security-parser
             pip3 install --user -r requirements.txt
-            # Run the parser.
-            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=<< parameters.fail_threshold >>
+      - when:
+          condition: << parameters.fail_threshold >>
+          steps:
+            - run:
+                name: "[security/parse] [Run] circleci-security-parser"
+                command: |
+                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=<< parameters.fail_threshold >>
+      - unless:
+          condition: << parameters.fail_threshold >>
+          steps:
+            - run:
+                name: "[security/parse] [Run] circleci-security-parser"
+                command: |
+                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=high
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
 
