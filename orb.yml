@@ -52,15 +52,15 @@ commands:
           name: "[security/parse] [Install] circleci-security-parser"
           command: |
             # Clone circleci-security-parser and install its dependencies
-            git clone https://github.com/salidas/circleci-security-parser
-            cd circleci-security-parser
-            pip3 install --user -r requirements.txt
+            git clone https://github.com/salidas/circleci-security-parser ~/circleci-security-parser
       - when:
           condition: << parameters.fail_threshold >>
           steps:
             - run:
                 name: "[security/parse] [Run] circleci-security-parser"
                 command: |
+                  cd ~/circleci-security-parser
+                  pip3 install --user -r requirements.txt
                   python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=<< parameters.fail_threshold >>
       - unless:
           condition: << parameters.fail_threshold >>
@@ -68,6 +68,8 @@ commands:
             - run:
                 name: "[security/parse] [Run] circleci-security-parser"
                 command: |
+                  cd ~/circleci-security-parser
+                  pip3 install --user -r requirements.txt
                   python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=high
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
