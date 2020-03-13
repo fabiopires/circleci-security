@@ -30,10 +30,6 @@ commands:
   # csv.
   parse:
     parameters:
-      fail_threshold:
-        default: ""
-        type: string
-        description: "The minimum threshold that the parser will fail on"
       output_directory:
         default: ~/output
         type: string
@@ -53,24 +49,12 @@ commands:
           command: |
             # Clone circleci-security-parser and install its dependencies
             git clone https://github.com/salidas/circleci-security-parser ~/circleci-security-parser
-      - when:
-          condition: << parameters.fail_threshold >>
-          steps:
-            - run:
-                name: "[security/parse] [Run] circleci-security-parser"
-                command: |
-                  cd ~/circleci-security-parser
-                  pip3 install --user -r requirements.txt
-                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=<< parameters.fail_threshold >>
-      - unless:
-          condition: << parameters.fail_threshold >>
-          steps:
-            - run:
-                name: "[security/parse] [Run] circleci-security-parser"
-                command: |
-                  cd ~/circleci-security-parser
-                  pip3 install --user -r requirements.txt
-                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output --fail=high
+      - run:
+          name: "[security/parse] [Run] circleci-security-parser"
+          command: |
+            cd ~/circleci-security-parser
+            pip3 install --user -r requirements.txt
+            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
 
