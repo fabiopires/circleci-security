@@ -7,8 +7,6 @@ orbs:
   snyk: snyk/snyk@0.0.8
   aws-s3: circleci/aws-s3@1.0.13
 
-
-
 # executors:
 #   container_builder:
 #     description: Simple base image with orb-specific variables set
@@ -54,7 +52,7 @@ commands:
           command: |
             cd ~/circleci-security-parser
             pip3 install --user -r requirements.txt
-            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output
+            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output -v
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
 
