@@ -32,6 +32,10 @@ commands:
         default: ~/output
         type: string
         description: "The directory containing raw tool output"
+      config:
+        default: ""
+        type: string
+        description: "The location of the config.yml file to consume"
     steps:
       - run:
           name: "[security/parse] [Install] Python 3, pip"
@@ -47,12 +51,24 @@ commands:
           command: |
             # Clone circleci-security-parser and install its dependencies
             git clone https://github.com/salidas/circleci-security-parser ~/circleci-security-parser
-      - run:
-          name: "[security/parse] [Run] circleci-security-parser"
-          command: |
-            cd ~/circleci-security-parser
-            pip3 install --user -r requirements.txt
-            python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output -v
+      - when:
+          condition: << parameters.config >>
+          steps:
+            - run:
+                name: "[security/parse] [Run] circleci-security-parser"
+                command: |
+                  cd ~/circleci-security-parser
+                  pip3 install --user -r requirements.txt
+                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output -v -c << parameters.config >>
+      - unless:
+          condition: << parameters.config >>
+          steps:
+            - run:
+                name: "[security/parse] [Run] circleci-security-parser"
+                command: |
+                  cd ~/circleci-security-parser
+                  pip3 install --user -r requirements.txt
+                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output -v
       - store_artifacts:
           path: << parameters.output_directory >>/parsed_output
 
