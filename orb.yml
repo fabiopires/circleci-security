@@ -261,7 +261,7 @@ commands:
           command: mkdir -p << parameters.output_directory >>/nancy
       - run:
           name: "[security/golang_nancy] [Run] nancy"
-          command: << parameters.install_directory >>/nancy << parameters.target_directory >>/<< parameters.package_file >> -output json > << parameters.output_directory>>/nancy/results_nancy.json || true
+          command: << parameters.install_directory >>/nancy -output json << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/nancy/results_nancy.json || true
       - store_artifacts:
           path: << parameters.output_directory >>
 
