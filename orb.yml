@@ -148,6 +148,40 @@ commands:
           path: << parameters.output_directory >>
 
 
+  secrets_gitleaks:
+    parameters:
+      output_directory:
+        default: ~/output
+        type: string
+        description: The location to save gitleaks output to
+      target_directory:
+        default: ~/project
+        type: string
+        description: The repository to be scanned with gitleaks
+    steps:
+      - run:
+          name: "[security/secrets_gitleaks] [Install] curl"
+          command: |
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+      - run:
+          name: "[security/secrets_gitleaks] [Install] gitleaks"
+          command: |
+            cd ~/project
+            curl -sL https://github.com/zricethezav/gitleaks/releases/download/v4.2.0/gitleaks-linux-amd64 > gitleaks
+      - run:
+          name: "[security/secrets_gitleaks] [Prepare] Create output folder"
+          command: mkdir -p << parameters.output_directory >>/gitleaks
+      - run:
+          name: "[security/secrets_gitleaks] [Run] gitleaks"
+          command: |
+            cd << parameters.output_directory >>/gitleaks
+            gitleaks --repo-path=<< parameters.target_directory >> --verbose | sed '$d' > gitleaks_output_unparsed.json
+      - store_artifacts:
+          path: << parameters.output_directory >>
+
+
   golang_gosec:
     parameters:
       install_directory:
