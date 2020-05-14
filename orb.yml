@@ -177,7 +177,7 @@ commands:
           name: "[security/secrets_gitleaks] [Run] gitleaks"
           command: |
             cd << parameters.output_directory >>/gitleaks
-            ~/gitleaks --repo=<< parameters.target_directory >> --verbose | sed '$d' > results_gitleaks_output_unparsed.json
+            $(~/gitleaks --repo=<< parameters.target_directory >> --verbose | sed '$d' > results_gitleaks_output_unparsed.json) || true
       - store_artifacts:
           path: << parameters.output_directory >>
 
