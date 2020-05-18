@@ -35,7 +35,7 @@ commands:
       config:
         default: ""
         type: string
-        description: "The location of the config.yml file to consume"
+        description: "The location of the security.yml file to consume"
     steps:
       - run:
           name: "[security/parse] [Install] Python 3, pip"
@@ -286,7 +286,7 @@ jobs:
       - run:
           name: "[securty/golang] [Prepare] Create output folder"
           command: mkdir -p << parameters.output_directory >>
-      - secrets_burrow:
+      - secrets_gitleaks:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - golang_gosec:
@@ -329,7 +329,7 @@ jobs:
             - run:
                 name: "[security/node] [Install] Node packages via npm"
                 command: "cd << parameters.target_directory >> && yarn install && cd"
-      - secrets_burrow:
+      - secrets_gitleaks:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - dependencies_snyk_node:
@@ -353,7 +353,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - checkout
-      - secrets_burrow:
+      - secrets_gitleaks:
           target_directory: << parameters.target_directory >>
           output_directory: << parameters.output_directory >>
       - parse:
