@@ -267,6 +267,23 @@ commands:
 
 # JOBS START HERE
 jobs:
+  parse:
+    docker:
+      - image: circleci/python:buster
+        parameters:
+    parameters:
+      output_directory:
+        default: ~/output
+        type: string
+        description: "The directory containing raw tool output"
+      config:
+        default: ""
+        type: string
+        description: "The location of the security.yml file to consume"
+    steps:
+      - parse:
+          output_directory: << parameters.output_directory >>
+          config: << parameters.config >>
   golang:
     docker:
       - image: circleci/golang:latest
