@@ -50,7 +50,7 @@ commands:
           name: "[security/parse] [Install] circleci-security-parser"
           command: |
             # Clone circleci-security-parser and install its dependencies
-            git clone https://github.com/salidas/circleci-security-parser ~/circleci-security-parser
+            git clone https://github.com/itsdean/circleci-security-parser ~/circleci-security-parser
       - when:
           condition: << parameters.config >>
           steps:
