@@ -177,7 +177,8 @@ commands:
       - run:
           name: "[security/secrets_gitleaks] [Run] gitleaks"
           command: |
-            ~/gitleaks --repo=<< parameters.target_directory >> --report-format=json --report=~/.circleci-security/tool_output/gitleaks/results_gitleaks_output.json || true
+            cd ~/.circleci-security/tool_output/gitleaks
+            ~/gitleaks --repo=<< parameters.target_directory >> --report-format=json --report=results_gitleaks_output.json || true
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
