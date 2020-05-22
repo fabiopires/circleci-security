@@ -28,10 +28,10 @@ commands:
   # csv.
   parse:
     parameters:
-      output_directory:
-        default: ~/output
-        type: string
-        description: "The directory containing raw tool output"
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: "The directory containing raw tool output"
       config:
         default: ""
         type: string
@@ -45,7 +45,8 @@ commands:
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           # Don't forget to cd back home!
-          command: cd ~ && mkdir -p << parameters.output_directory >>/parsed_output
+          # command: cd ~ && mkdir -p << parameters.output_directory >>/parsed_output
+          command: cd ~ && mkdir -p ~/.circleci-security/parsed_output
       - run:
           name: "[security/parse] [Install] circleci-security-parser"
           command: |
@@ -59,7 +60,7 @@ commands:
                 command: |
                   cd ~/circleci-security-parser
                   pip3 install --user -r requirements.txt
-                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output -v -c << parameters.config >>
+                  python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
       - unless:
           condition: << parameters.config >>
           steps:
@@ -68,9 +69,9 @@ commands:
                 command: |
                   cd ~/circleci-security-parser
                   pip3 install --user -r requirements.txt
-                  python3 main.py -i << parameters.output_directory >> -o << parameters.output_directory >>/parsed_output -v
+                  python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v
       - store_artifacts:
-          path: << parameters.output_directory >>/parsed_output
+          path: ~/.circleci-security/parsed_output
 
   # Leverages the official snyk CircleCI orb to find node project vulnerabilities
   dependencies_snyk_node:
@@ -79,10 +80,10 @@ commands:
         default: SNYK_TOKEN
         type: string
         description: The name of the environment variable storing the snyk.io API token.
-      output_directory:
-        default: ~/output
-        type: string
-        description: The location to save snyk output to
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: The location to save snyk output to
       target_directory:
         default: ~/project
         type: string
@@ -102,7 +103,7 @@ commands:
             fi
       - run:
           name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>/snyk
+          command: mkdir -p ~/.circleci-security/tool_output/snyk
       - run:
           name: "[security/dependencies_snyk_node] [Prepare] cd into target directory"
           command: "cd << parameters.target_directory >>"
@@ -110,9 +111,9 @@ commands:
           fail-on-issues: false
           monitor-on-build: false
           token-variable: << parameters.token >>
-          additional-arguments: "--json > << parameters.output_directory >>/snyk/results_snyk_node.json"
+          additional-arguments: "--json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json"
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: ~/.circleci-security/tool_output
 
   secrets_burrow:
     parameters:
@@ -120,10 +121,10 @@ commands:
         default: ~/burrow
         type: string
         description: The location to install burrow
-      output_directory:
-        default: ~/output
-        type: string
-        description: The location to save burrow output to
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: The location to save burrow output to
       target_directory:
         default: ~/project
         type: string
@@ -136,24 +137,24 @@ commands:
             sudo apt-get install python3-pip
       - run:
           name: "[security/secrets_burrow] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>/burrow
+          command: mkdir -p .circleci-security/tool_output/burrow
       - run:
           name: "[security/secrets_burrow] [Run] burrow"
           command: |
             git clone https://github.com/salidas/burrow << parameters.burrow_directory >>
             cd << parameters.burrow_directory >>
             pip3 install --user -r requirements.txt
-            python3 burrow.py -i << parameters.target_directory >> -o << parameters.output_directory >>/burrow
+            python3 burrow.py -i << parameters.target_directory >> -o ~/.circleci-security/tool_output/burrow
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: ~/.circleci-security/tool_output
 
 
   secrets_gitleaks:
     parameters:
-      output_directory:
-        default: ~/output
-        type: string
-        description: The location to save gitleaks output to
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: The location to save gitleaks output to
       target_directory:
         default: ~/project
         type: string
@@ -172,14 +173,13 @@ commands:
             chmod +x ~/gitleaks
       - run:
           name: "[security/secrets_gitleaks] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>/gitleaks
+          command: mkdir -p ~/.circleci-security/tool_output/gitleaks
       - run:
           name: "[security/secrets_gitleaks] [Run] gitleaks"
           command: |
-            cd << parameters.output_directory >>/gitleaks
-            ~/gitleaks --repo=<< parameters.target_directory >> --report-format=json --report=results_gitleaks_output.json || true
+            ~/gitleaks --repo=<< parameters.target_directory >> --report-format=json --report=~/.circleci-security/tool_output/gitleaks/results_gitleaks_output.json || true
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: ~/.circleci-security/tool_output
 
 
   golang_gosec:
@@ -188,10 +188,10 @@ commands:
         default: ~/gosec
         type: string
         description: The location to save gosec to
-      output_directory:
-        default: ~/output
-        type: string
-        description: The location to save gosec output to
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: The location to save gosec output to
       target_directory:
         default: ~/project
         type: string
@@ -213,14 +213,14 @@ commands:
             curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s latest
       - run:
           name: "[security/golang_gosec] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>/golang_gosec
+          command: mkdir -p ~/.circleci-security/tool_output/golang_gosec
       - run:
           name: "[security/golang_gosec] [Run] gosec"
           command: |
-            cd << parameters.output_directory >>/golang_gosec
+            cd ~/.circleci-security/tool_output/golang_gosec
             << parameters.install_directory >>/bin/gosec -fmt=json -out=results_gosec.json << parameters.target_directory >>/... || true
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: ~/.circleci-security/tool_output
 
 
   golang_nancy:
@@ -233,10 +233,10 @@ commands:
         default: ~/nancy
         type: string
         description: The location to save nancy to
-      output_directory:
-        default: ~/output
-        type: string
-        description: The directory to send nancy output to
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: The directory to send nancy output to
       target_directory:
         default: ~/project
         type: string
@@ -258,12 +258,12 @@ commands:
             chmod +x << parameters.install_directory >>/nancy
       - run:
           name: "[security/golang_nancy] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>/nancy
+          command: mkdir -p ~/.circleci-security/tool_output/nancy
       - run:
           name: "[security/golang_nancy] [Run] nancy"
-          command: << parameters.install_directory >>/nancy -output json << parameters.target_directory >>/<< parameters.package_file >> > << parameters.output_directory>>/nancy/results_nancy.json || true
+          command: << parameters.install_directory >>/nancy -output json << parameters.target_directory >>/<< parameters.package_file >> > ~/.circleci-security/tool_output/nancy/results_nancy.json || true
       - store_artifacts:
-          path: << parameters.output_directory >>
+          path: ~/.circleci-security/tool_output
 
 # JOBS START HERE
 jobs:
@@ -272,26 +272,28 @@ jobs:
       - image: circleci/python:buster
         parameters:
     parameters:
-      output_directory:
-        default: ~/output
-        type: string
-        description: "The directory containing raw tool output"
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: "The directory containing raw tool output"
       config:
         default: ""
         type: string
         description: "The location of the security.yml file to consume"
     steps:
       - parse:
-          output_directory: << parameters.output_directory >>
           config: << parameters.config >>
   golang:
     docker:
       - image: circleci/golang:latest
     parameters:
-      output_directory:
-        default: ~/output
+      # output_directory:
+      #   default: ~/output
+      #   type: string
+      #   description: The directory to save scan and parse output to
+      config:
+        default: ""
         type: string
-        description: The directory to save scan and parse output to
       target_directory:
         default: ~/project
         type: string
@@ -302,26 +304,22 @@ jobs:
       - checkout
       - run:
           name: "[securty/golang] [Prepare] Create output folder"
-          command: mkdir -p << parameters.output_directory >>
+          command: mkdir -p ~/.circleci-security/tool_output
       - secrets_gitleaks:
           target_directory: << parameters.target_directory >>
-          output_directory: << parameters.output_directory >>
       - golang_gosec:
           target_directory: << parameters.target_directory >>
-          output_directory: << parameters.output_directory >>
       - golang_nancy:
           target_directory: << parameters.target_directory >>
-          output_directory: << parameters.output_directory >>
       - parse:
-          output_directory: << parameters.output_directory >>
+          config: << parameters.config >>
   node:
     docker:
       - image: circleci/node:latest
-    parameters:
-      output_directory:
-        default: ~/output
+    parameters: 
+      config:
+        default: ""
         type: string
-        description: The directory to save scan and parse output to
       target_directory:
         default: ~/project
         type: string
@@ -345,23 +343,20 @@ jobs:
           steps:
             - run:
                 name: "[security/node] [Install] Node packages via npm"
-                command: "cd << parameters.target_directory >> && yarn install && cd"
+                command: "cd << parameters.target_directory >> && npm install && cd"
       - secrets_gitleaks:
           target_directory: << parameters.target_directory >>
-          output_directory: << parameters.output_directory >>
       - dependencies_snyk_node:
           target_directory: << parameters.target_directory >>
-          output_directory: << parameters.output_directory >>
       - parse:
-          output_directory: << parameters.output_directory >>
+          config: << parameters.config >>
   secrets:
     docker:
       - image: circleci/python:latest
     parameters:
-      output_directory:
-        default: ~/output
+      config:
+        default: ""
         type: string
-        description: The directory to save scan and parse output to
       target_directory:
         default: ~/project
         type: string
@@ -372,9 +367,8 @@ jobs:
       - checkout
       - secrets_gitleaks:
           target_directory: << parameters.target_directory >>
-          output_directory: << parameters.output_directory >>
       - parse:
-          output_directory: << parameters.output_directory >>
+          config: << parameters.config >>
 
         
      
