@@ -51,7 +51,7 @@ commands:
             - run:
                 name: "[security/parse] [Run] circleci-security-parser"
                 command: |
-                  cd ~/circleci-security/tool/circleci-security-parser
+                  cd ~/.circleci-security/tool/circleci-security-parser
                   python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v
       - store_artifacts:
           path: ~/.circleci-security/parsed_output
