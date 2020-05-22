@@ -137,7 +137,7 @@ commands:
             sudo apt-get install python3-pip
       - run:
           name: "[security/secrets_burrow] [Prepare] Create output folder"
-          command: mkdir -p .circleci-security/tool_output/burrow
+          command: mkdir -p ~/.circleci-security/tool_output/burrow
       - run:
           name: "[security/secrets_burrow] [Run] burrow"
           command: |
