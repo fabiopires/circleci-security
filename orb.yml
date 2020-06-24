@@ -234,7 +234,7 @@ commands:
           command : |
             python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
       - store_artifacts:
-        path: ~/.circleci-security/tool_output
+          path: ~/.circleci-security/tool_output
 
 
 # JOBS START HERE
