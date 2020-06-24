@@ -216,8 +216,8 @@ commands:
           name: "[security/shed] [Install] Python 3, pip"
           command: |
             sudo apt-get update
-            sudo apt-get install python3-dev
-            sudo apt-get install python3-pip
+            sudo apt-get install -y python3-dev
+            sudo apt-get install -y python3-pip
       - run:
           name: "[security/shed] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output
