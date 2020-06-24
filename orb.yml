@@ -230,11 +230,22 @@ commands:
             git clone https://github.com/itsdean/SHeD ~/.circleci-security/tool/shed
             cd ~/.circleci-security/tool/shed
             pip3 install -r requirements.txt
-      - run:
-          name: "[security/shed] [Run] SHeD"
-          command : |
-            cd ~/.circleci-security/tool/shed
-            python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
+      - when:
+          condition: << parameters.headers >>
+          steps:
+            - run:
+                name: "[security/shed] [Run] SHeD"
+                command: |
+                  cd ~/.circleci-security/tool/shed
+                  python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
+      - unless:
+          condition: << parameters.headers >>
+          steps:
+            - run:
+                name: "[security/shed] [Run] SHeD"
+                command: |
+                  cd ~/.circleci-security/tool/shed
+                  python3 shed.py -u << parameters.url >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
