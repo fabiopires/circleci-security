@@ -245,7 +245,7 @@ commands:
                 name: "[security/shed] [Run] SHeD"
                 command: |
                   cd ~/.circleci-security/tool/shed
-                  python3 shed.py -u << parameters.url >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
+                  python3 shed.py -u << parameters.url >> --output ~/.circleci-security/tool_output/shed/results_shed.json
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
