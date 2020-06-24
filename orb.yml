@@ -5,7 +5,7 @@ description: Security tooling steps
 orbs:
   snyk: snyk/snyk@0.0.8
 
-# Most orb commands follow a common step format:
+# The orb commands follow a common step format:
 # 1) [Install] - Install any pre-requisites such as packages, dependencies, etc.
 # 2) [Prepare] - Prepare any files or directories that need to be set up for tool output.
 # 3) [Run] - Run the associated tool
@@ -200,6 +200,43 @@ commands:
           path: ~/.circleci-security/tool_output
 
 
+  shed:
+    description: "Runs SHeD on a URL to report back on headers and cookies"
+    parameters:
+      url:
+        default: "http://127.0.0.1"
+        type: string
+        description: "The full URI to be requested."
+      headers:
+        default: ""
+        type: string
+        description: "Any specific headers to be provided (in a=b;c=d format)."
+    steps:
+      - run:
+          name: "[security/shed] [Install] Python 3, pip"
+          command: |
+            sudo apt-get update
+            sudo apt-get install python3-dev
+            sudo apt-get install python3-pip
+      - run:
+          name: "[security/shed] [Prepare] Create output folder"
+          command: mkdir -p ~/.circleci-security/tool_output
+      - run:
+          name: "[security/shed] [Prepare] Create tool folder"
+          command: mkdir -p ~/.circleci-security/tool
+      - run:
+          name: "[security/shed] [Install] SHeD"
+          command: |
+            git clone https://github.com/itsdean/SHeD ~/.circleci-security/tool/shed
+            cd ~/.circleci-security/tool/shed
+      - run:
+          name: "[security/shed] [Run] SHeD"
+          command : |
+            python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
+      - store_artifacts:
+        path: ~/.circleci-security/tool_output
+
+
 # JOBS START HERE
 # jobs:
 #   parse:
@@ -325,7 +362,7 @@ commands:
   #       default: ~/output/audit-ci
   #       type: string
   #       description: The location to save the audit output to
-  #     additional_arguments:
+  #     additional_arguments: 
   #       default: ""
   #       type: string
   #       description: Additional CLI arguments that should be run with
