@@ -220,7 +220,7 @@ commands:
             sudo apt-get install -y python3-pip
       - run:
           name: "[security/shed] [Prepare] Create output folder"
-          command: mkdir -p ~/.circleci-security/tool_output
+          command: mkdir -p ~/.circleci-security/tool_output/shed
       - run:
           name: "[security/shed] [Prepare] Create tool folder"
           command: mkdir -p ~/.circleci-security/tool
@@ -237,7 +237,7 @@ commands:
                 name: "[security/shed] [Run] SHeD"
                 command: |
                   cd ~/.circleci-security/tool/shed
-                  python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/nancy/results_shed.json
+                  python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/shed/results_shed.json
       - unless:
           condition: << parameters.headers >>
           steps:
