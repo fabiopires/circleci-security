@@ -197,8 +197,7 @@ commands:
           name: "[security/golang_nancy] [Run] nancy"
           command: |
             cd << parameters.target_directory >>
-            go list -json -m all | ~/.circleci-security/tool/nancy/nancy -quiet -output json 
-            > ~/.circleci-security/tool_output/nancy/results_nancy.json || true
+            go list -json -m all | ~/.circleci-security/tool/nancy/nancy -quiet -output json > ~/.circleci-security/tool_output/nancy/results_nancy.json || true
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
