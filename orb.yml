@@ -167,10 +167,10 @@ commands:
   golang_nancy:
     description: "Runs nancy on the target."
     parameters:
-      package_file:
-        default: "go.sum"
-        type: string
-        description: "The file to be targetted by nancy. This can be either go.sum or Gopkg.lock; support for other managers depends on nancy"
+      # package_file:
+      #   default: "go.sum"
+      #   type: string
+      #   description: "The file to be targetted by nancy. This can be either go.sum or Gopkg.lock; support for other managers depends on nancy"
       target_directory:
         default: ~/project
         type: string
@@ -188,14 +188,17 @@ commands:
       - run:
           name: "[security/golang_nancy] [Install] nancy"
           command: |
-            curl -s -L https://github.com/sonatype-nexus-community/nancy/releases/download/v0.1.5/nancy-linux.amd64-v0.1.5 > ~/.circleci-security/tool/nancy/nancy
+            curl -s -L https://github.com/sonatype-nexus-community/nancy/releases/download/v0.1.19/nancy-linux.amd64-v0.1.19 > ~/.circleci-security/tool/nancy/nancy
             chmod +x ~/.circleci-security/tool/nancy/nancy
       - run:
           name: "[security/golang_nancy] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output/nancy
       - run:
           name: "[security/golang_nancy] [Run] nancy"
-          command: ~/.circleci-security/tool/nancy/nancy -output json << parameters.target_directory >>/<< parameters.package_file >> > ~/.circleci-security/tool_output/nancy/results_nancy.json || true
+          command: |
+            cd << parameters.target_directory >>
+            go list -json -m all | ~/.circleci-security/tool/nancy/nancy -quiet -output json 
+            > ~/.circleci-security/tool_output/nancy/results_nancy.json || true
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
