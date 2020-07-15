@@ -177,6 +177,14 @@ commands:
         description: The directory to be scanned with nancy
     steps:
       - run:
+          name: "[security/golang_nancy] [Update] sudo apt update"
+          command: sudo apt update
+      - run:
+          name: "[security/golang_nancy] [Install] golang"
+          command: |
+            if [[ ! $(which golang) ]]; then
+              (set +o pipefail; apk add golang || apt-get install -y golang || yum install -y golang)
+      - run:
           name: "[security/golang_nancy] [Install] curl"
           command: |
             if [[ ! $(which curl) ]]; then
