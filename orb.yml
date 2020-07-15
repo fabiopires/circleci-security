@@ -177,20 +177,11 @@ commands:
         description: The directory to be scanned with nancy
     steps:
       - run:
-          name: "[security/golang_nancy] [Update] sudo apt update"
-          command: sudo apt update
-      - run:
-          name: "[security/golang_nancy] [Install] golang"
+          name: "[security/golang_nancy] [Install] golang, curl"
           command: |
-            if [[ ! $(which golang) ]]; then
-              (set +o pipefail; apk add golang || apt-get install -y golang || yum install -y golang)
-            fi
-      - run:
-          name: "[security/golang_nancy] [Install] curl"
-          command: |
-            if [[ ! $(which curl) ]]; then
-              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
-            fi
+            sudo apt update
+            sudo apt install -y golang
+            sudo apt install -y curl
       - run:
           name: "[security/golang_nancy] [Prepare] Create nancy tool folder"
           command: mkdir -p ~/.circleci-security/tool/nancy
