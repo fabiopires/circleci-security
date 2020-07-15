@@ -145,6 +145,12 @@ commands:
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
             fi
       - run:
+          name: "[security/golang_gosec] [Install] golang 1.14.2"
+          command: |
+            wget -c https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+            export PATH=$PATH:/usr/local/go/bin >> ~/.profile && source ~/.profile
+            go version
+      - run:
           name: "[security/golang_gosec] [Prepare] Create gosec tool folder"
           command: mkdir -p ~/.circleci-security/tool/gosec
       - run:
