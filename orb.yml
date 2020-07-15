@@ -184,6 +184,7 @@ commands:
           command: |
             if [[ ! $(which golang) ]]; then
               (set +o pipefail; apk add golang || apt-get install -y golang || yum install -y golang)
+            fi
       - run:
           name: "[security/golang_nancy] [Install] curl"
           command: |
