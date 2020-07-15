@@ -177,11 +177,16 @@ commands:
         description: The directory to be scanned with nancy
     steps:
       - run:
-          name: "[security/golang_nancy] [Install] golang, curl"
+          name: "[security/golang_nancy] [Install] curl"
           command: |
             sudo apt update
-            sudo apt install -y golang
             sudo apt install -y curl
+      - run:
+          name: "[security/golang_nancy] [Install] golang 1.14.2"
+          command: |
+            wget -c https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+            export PATH=$PATH:/usr/local/go/bin >> ~/.profile && source ~/.profile
+            go version
       - run:
           name: "[security/golang_nancy] [Prepare] Create nancy tool folder"
           command: mkdir -p ~/.circleci-security/tool/nancy
