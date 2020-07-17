@@ -17,18 +17,18 @@ orbs:
   security: salidas/security@dev:master
 
 jobs:
-  check_node_dependencies: // The job you create/use to build/pull/test your project
+  check_node_dependencies: # The job you create/use to build/pull/test your project
     docker:
       - image: circleci/node:buster
     steps:
       - checkout
-      - run: // Standard Node project step
+      - run: # Standard Node project step
           name: "[check_node_dependencies][Install] Run 'yarn install'"
           command: |
             CIRCLE_WORKING_DIRECTORY="${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}"
             cd $CIRCLE_WORKING_DIRECTORY
             yarn install
-      - security/dependencies_snyk_node // Insert the security steps you wish to run
+      - security/dependencies_snyk_node # Insert the security steps you wish to run
       
  workflows:
   build:
