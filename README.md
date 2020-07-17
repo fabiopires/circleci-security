@@ -33,7 +33,7 @@ jobs:
  workflows:
   build:
     jobs:
-      - check_security
+      - check_node_dependencies
 ```
 
 # Features - Individual Security Tools
