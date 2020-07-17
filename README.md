@@ -6,7 +6,7 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
 Add the following orb to your .circleci/config.yml file:
 ```yaml
 orbs:
-  security: salidas/security@dev:master
+  security: salidas/security@0.0.3
 ```
 
 Then, add security steps into your existing CircleCI build jobs! \
