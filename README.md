@@ -9,6 +9,9 @@ orbs:
   security: salidas/security@dev:master
 ```
 
+Then, add security steps into your existing CircleCI build jobs! \
+See **Features** below for a list of steps you can call.
+
 # Example Usage in a .circleci/config.yml file
 ```yaml
 version: 2.1
