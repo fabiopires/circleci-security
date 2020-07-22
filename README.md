@@ -6,8 +6,11 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
 Add the following orb to your .circleci/config.yml file:
 ```yaml
 orbs:
-  security: salidas/security@dev:master
+  security: salidas/security@0.0.3
 ```
+
+Then, add security steps into your existing CircleCI build jobs! \
+See **Features** below for a list of steps you can call.
 
 # Example Usage in a .circleci/config.yml file
 ```yaml
@@ -17,23 +20,23 @@ orbs:
   security: salidas/security@dev:master
 
 jobs:
-  check_node_dependencies:
+  check_node_dependencies: # The job you create/use to build/pull/test your project
     docker:
       - image: circleci/node:buster
     steps:
       - checkout
-      - run:
-          name: "[check_security][Install] Run 'yarn install'"
+      - run: # Standard Node project step
+          name: "[check_node_dependencies][Install] Run 'yarn install'"
           command: |
             CIRCLE_WORKING_DIRECTORY="${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}"
             cd $CIRCLE_WORKING_DIRECTORY
             yarn install
-      - security/dependencies_snyk_node
+      - security/dependencies_snyk_node # Insert the security steps you wish to run
       
  workflows:
   build:
     jobs:
-      - check_security
+      - check_node_dependencies
 ```
 
 # Features - Individual Security Tools
