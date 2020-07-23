@@ -93,7 +93,7 @@ commands:
           fail-on-issues: false
           monitor-on-build: false
           token-variable: <<parameters.token>>
-          additional-arguments: "--json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json"
+          additional-arguments: "--file=<< parameters.target_directory >>/package.json --json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json"
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
