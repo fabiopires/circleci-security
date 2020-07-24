@@ -20,7 +20,7 @@ See **Features** below for a list of steps you can call.
 version: 2.1
 
 orbs:
-  security: salidas/security@0.0.3
+  security: salidas/security@0.2.0
 
 jobs:
   check_node_dependencies: # The job you create/use to build/pull/test your project
