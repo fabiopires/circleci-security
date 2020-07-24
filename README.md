@@ -12,7 +12,7 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
   * [Features - Individual Security Tools](#features---individual-security-tools)
       * [JavaScript](#javascript)
         * [insider](#insider)
-        * [snyk](#snyk)
+        * [Snyk](#snyk)
       * [Golang](#golang)
         * [gosec](#gosec)
         * [nancy](#nancy)
