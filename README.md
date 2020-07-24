@@ -20,7 +20,6 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
         * [gitleaks](#gitleaks)
       * [HTTP Headers and Secrets](#http-headers-and-cookies)
         * [SHeD](#shed)
-  * [License](#license)
 
 # Usage / Installation
 Add the following orb to your .circleci/config.yml file:
