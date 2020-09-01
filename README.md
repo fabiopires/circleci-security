@@ -2,11 +2,30 @@
 CircleCI Orb that allows you to leverage multiple security tools in your pipeline. \
 Invoking any of the security steps will run the relevant tool, and upload its output (in JSON format) as a CircleCi artifact.
 
+# Current Version
+*salidas/security@0.2.0*
+
+# Table of Contents
+
+  * [Usage / Installation](#usage--installation)
+  * [Example Usage](#example-usage-in-a-circleciconfigyml-file)
+  * [Features - Individual Security Tools](#features---individual-security-tools)
+      * [JavaScript](#javascript)
+        * [insider](#insider)
+        * [Snyk](#snyk)
+      * [Golang](#golang)
+        * [gosec](#gosec)
+        * [nancy](#nancy)
+      * [Secrets](#secrets)
+        * [gitleaks](#gitleaks)
+      * [HTTP Headers and Secrets](#http-headers-and-cookies)
+        * [SHeD](#shed)
+
 # Usage / Installation
 Add the following orb to your .circleci/config.yml file:
 ```yaml
 orbs:
-  security: salidas/security@0.0.3
+  security: salidas/security@0.2.0
 ```
 
 Then, add security steps into your existing CircleCI build jobs! \
@@ -17,7 +36,7 @@ See **Features** below for a list of steps you can call.
 version: 2.1
 
 orbs:
-  security: salidas/security@dev:master
+  security: salidas/security@0.2.0
 
 jobs:
   check_node_dependencies: # The job you create/use to build/pull/test your project
@@ -41,9 +60,18 @@ jobs:
 
 # Features - Individual Security Tools
 The following are CircleCI build steps you can add to your existing build processes:
-## Node
-### dependencies_snyk_node
-Uses Snyk's own CircleCI orb to check your Node project's dependencies for any publicly known vulnerabilities.
+## JavaScript
+### insider
+Uses [insider-cli](https://github.com/insidersec/insider) to check JavaScript code for security issues.
+#### Parameters
+- (optional) `target_directory` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
+#### Usage
+```yaml
+- security/javascript_insider
+```
+
+### Snyk
+Uses Snyk to check your Node project's dependencies for any publicly known vulnerabilities.
 #### Requirements
 - An environment variable containing your SNYK API key. The step will fail without this! By default Snyk looks for the value of SNYK_TOKEN.
 #### Parameters
@@ -55,7 +83,7 @@ Uses Snyk's own CircleCI orb to check your Node project's dependencies for any p
 ```
 
 ## Golang
-### golang_gosec
+### gosec
 Uses [gosec](https://github.com/securego/gosec) to check code for potential security issues.
 #### Parameters
 - (optional) `target_directory` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
@@ -64,7 +92,7 @@ Uses [gosec](https://github.com/securego/gosec) to check code for potential secu
 - security/golang_gosec
 ```
 
-### golang_nancy
+### nancy
 Uses [nancy](https://github.com/sonatype-nexus-community/nancy) to leverage Sonatype's OSS database and look for Golang dependency issues/vulnerabilities.
 #### Parameters
 - (optional) `target_directory` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
@@ -74,7 +102,7 @@ Uses [nancy](https://github.com/sonatype-nexus-community/nancy) to leverage Sona
 ```
 
 ## Secrets
-### secrets_gitleaks
+### gitleaks
 Uses [gitleaks](https://github.com/zricethezav/gitleaks) to scan the checked out repository for potentially hardcoded secrets and keys.
 #### Parameters
 - (optional) `target_directory` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
@@ -84,7 +112,7 @@ Uses [gitleaks](https://github.com/zricethezav/gitleaks) to scan the checked out
 ```
 
 ## HTTP Headers and Cookies
-### shed
+### SHeD
 Runs [a tool I created](https://github.com/itsdean/shed) to target a URL and provide information on security headers returned, \
 along with any cookies and their enabled/disabled/missing flags.
 #### Parameters
