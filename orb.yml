@@ -85,7 +85,7 @@ commands:
       - run:
           name: "[security/container_trivy] [Install] trivy"
           command: |
-            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
       - run:
           name: "[security/container_trivy] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output/trivy
