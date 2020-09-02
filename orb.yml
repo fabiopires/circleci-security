@@ -90,11 +90,9 @@ commands:
           name: "[security/container_trivy] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output/trivy
       - run:
-          name: "[security/container_trivy] [Prepare] cd into output directory"
-          command: cd ~/.circleci-security/tool_output/trivy
-      - run:
           name: "[security/contaainer_trivy] [Run] trivy"
           command: |
+            cd ~/.circleci-security/tool_output/trivy
             trivy image -f json -o results_trivy.json << parameters.image_name >>
       - store_artifacts:
           path: ~/.circleci-security/tool_output
