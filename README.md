@@ -3,7 +3,7 @@ CircleCI Orb that allows you to leverage multiple security tools in your pipelin
 Invoking any of the security steps will run the relevant tool, and upload its output (in JSON format) as a CircleCi artifact.
 
 # Current Version
-*salidas/security@0.2.0*
+*salidas/security@0.3.0*
 
 # Table of Contents
 
@@ -18,6 +18,8 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
         * [nancy](#nancy)
       * [Secrets](#secrets)
         * [gitleaks](#gitleaks)
+      * [Containers](#containers)
+        * [trivy](#trivy)
       * [HTTP Headers and Secrets](#http-headers-and-cookies)
         * [SHeD](#shed)
 
@@ -109,6 +111,17 @@ Uses [gitleaks](https://github.com/zricethezav/gitleaks) to scan the checked out
 #### Usage
 ```yaml
 - security/secrets_gitleaks
+```
+
+## Containers
+### trivy
+Uses [trivy](https://github.com/aquasecurity/trivy) to scan an image for vulnerabilities in its dependencies/packages.
+#### Parameters
+- (required) `image_name` - The name of the Docker image to be pulled and scanned.
+#### Usage
+```yaml
+- security/container_trivy:
+    image_name: vulnerables/web-dvwa
 ```
 
 ## HTTP Headers and Cookies
