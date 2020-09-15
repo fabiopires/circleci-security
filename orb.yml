@@ -362,14 +362,30 @@ jobs:
         default: ~/project
         type: string
         description: The directory to be targeted
+      snyk_token:
+        default: SNYK_TOKEN
+        type: string
+        description: The name of the environment variable storing the snyk.io API token.
+      insider:
+        default: true
+        type: boolean
+      snyk:
+        default: true
+        type: boolean
     steps:
       - checkout
       - run:
           name: "Initiate submodules"
           command: git submodule update --init --remote
-      - javascript_insider:
-          target_directory: << parameters.target_directory >>
+      - when:
+          condition: << parameters.insider >>
+          steps:
+            - javascript_insider:
+                target_directory: << parameters.target_directory >>
+      - when:
+          condition: << parameters.snyk >>
+          steps:
+            - dependencies_snyk_node:
+                target_directory: << parameters.target_directory >>
+                token: << parameters.snyk_token >>
       - parse
-      # - dependencies_snyk_node: # commenting until this can be skipped if the snyk token is invalid or missing
-      #     target_directory: << parameters.target_directory >>
-      #     snyk_token: << parameters.snyk_token >>
