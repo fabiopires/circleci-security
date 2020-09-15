@@ -347,3 +347,24 @@ commands:
                   python3 shed.py -u << parameters.url >> --output ~/.circleci-security/tool_output/shed/results_shed.json
       - store_artifacts:
           path: ~/.circleci-security/tool_output
+
+
+### JOBS
+
+
+jobs:
+  node:
+    description: "Run security tools oriented for Node projects/repositories"
+    docker:
+      - image: cimg/base:2020.01
+    parameters:
+      target_directory:
+        default: ~/project
+        type: string
+        description: The directory to be targeted
+    steps:
+      - javascript_insider:
+          target_directory: << parameters.target_directory >>
+      # - dependencies_snyk_node: # commenting until this can be skipped if the snyk token is invalid or missing
+      #     target_directory: << parameters.target_directory >>
+      #     snyk_token: << parameters.snyk_token >>
