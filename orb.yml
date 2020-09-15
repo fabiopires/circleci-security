@@ -363,6 +363,7 @@ jobs:
         type: string
         description: The directory to be targeted
     steps:
+      - checkout
       - javascript_insider:
           target_directory: << parameters.target_directory >>
       # - dependencies_snyk_node: # commenting until this can be skipped if the snyk token is invalid or missing
