@@ -364,6 +364,9 @@ jobs:
         description: The directory to be targeted
     steps:
       - checkout
+      - run:
+          name: "Initiate submodules"
+          command: git submodule update --init --remote
       - javascript_insider:
           target_directory: << parameters.target_directory >>
       - parse
