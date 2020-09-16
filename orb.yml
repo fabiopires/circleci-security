@@ -367,6 +367,7 @@ jobs:
         type: string
         description: The name of the environment variable storing the snyk.io API token.
       parse_config:
+        default: ~/project/.security/parser.yml
         type: string
         description: "The location of the security.yml file to consume for the parser"
       insider:
