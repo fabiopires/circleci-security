@@ -366,10 +366,16 @@ jobs:
         default: SNYK_TOKEN
         type: string
         description: The name of the environment variable storing the snyk.io API token.
+      parse_config:
+        type: string
+        description: "The location of the security.yml file to consume for the parser"
       insider:
         default: true
         type: boolean
       snyk:
+        default: true
+        type: boolean
+      parse:
         default: true
         type: boolean
     steps:
@@ -388,4 +394,15 @@ jobs:
             - dependencies_snyk_node:
                 target_directory: << parameters.target_directory >>
                 token: << parameters.snyk_token >>
-      - parse
+      - when:
+          condition: << parameters.parse >>
+          steps:
+            - when:
+                condition: << parameters.parse_config >>
+                steps:
+                  - parse:
+                      config: << parameters.parse_config >>
+            - unless:
+                condition: << parameters.parse_config >>
+                steps:
+                  - parse
