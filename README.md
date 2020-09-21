@@ -3,7 +3,7 @@ CircleCI Orb that allows you to leverage multiple security tools in your pipelin
 Invoking any of the security steps will run the relevant tool, and upload its output (in JSON format) as a CircleCi artifact.
 
 # Current Version
-*salidas/security@0.3.0*
+*salidas/security@0.4.0*
 
 # Table of Contents
 
@@ -22,6 +22,7 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
         * [trivy](#trivy)
       * [HTTP Headers and Secrets](#http-headers-and-cookies)
         * [SHeD](#shed)
+  * [Per Language Usage](#per-language-usage) 
 
 # Usage / Installation
 Add the following orb to your .circleci/config.yml file:
@@ -136,4 +137,27 @@ along with any cookies and their enabled/disabled/missing flags.
 - security/shed:
     url: "http://127.0.0.1"
     headers: "Cookie: a=x;b=y;|Authorisation: Basic foobar"
+```
+
+# Per Language Usage
+Rather than adding a line in your config file for each tool you want to use, there are preconfigured jobs that will run tools designed for certain languages/frameworks.
+## Node
+The node step will run the following steps:
+- `javascript_insider`
+- `dependencies_snyk_node`
+- `parse`
+### Parameters
+- (optional) `target_directory` - The target directory to be scanned. By default, this is CircleCI's default which is `~/project`.
+- (optional) `snyk_token` - The name of the environment variable that stores the Snyk API token required to run dependencies_snyk_node. By default, this is SNYK_TOKEN.
+- (optional) `parse_config` - The location of the custom configuration file used to by the parser. By default this is `~/project/.security/parser.yml`
+- (optional) `insider` - Boolean flag to decide whether to run the `javascript_insider` step. 
+- (optional) `snyk` - Boolean flag to decide whether to run the `dependencies_snyk_node` step.
+- (optional) `parse` - Boolean flag to decide whether to run the `parse` step.
+### Usage
+```yaml
+# Rather than as a step, add directly as an entire job
+workflows:
+  <name of your workflow>:
+    jobs:
+      - security/node
 ```
