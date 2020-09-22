@@ -22,6 +22,15 @@ commands:
         description: "The location of the security.yml file to consume"
     steps:
       - run:
+          name: "[security/core] [Install] curl, sudo"
+          command: |
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
+      - run:
           name: "[security/parse] [Install] Python 3, pip"
           command: |
             sudo apt-get update
@@ -71,11 +80,8 @@ commands:
         description: "The location of the directory to be targeted."
     steps:
       - run:
-          name: "[security/container_trivy] [Install] bash, curl, sudo"
+          name: "[security/core] [Install] curl, sudo"
           command: |
-            if [[ ! $(which bash) ]]; then
-              (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
-            fi
             if [[ ! $(which curl) ]]; then
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
             fi
@@ -111,11 +117,8 @@ commands:
         description: "The location of the directory to be targeted."
     steps:
       - run:
-          name: "[security/dependencies_snyk_node] [Install] bash, curl, sudo"
+          name: "[security/core] [Install] curl, sudo"
           command: |
-            if [[ ! $(which bash) ]]; then
-              (set +o pipefail; apk add bash || apt-get install -y bash || yum install -y bash)
-            fi
             if [[ ! $(which curl) ]]; then
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
             fi
@@ -160,10 +163,13 @@ commands:
         description: "The location of the directory to be targeted."
     steps:
       - run:
-          name: "[security/secrets_gitleaks] [Install] curl"
+          name: "[security/core] [Install] curl, sudo"
           command: |
             if [[ ! $(which curl) ]]; then
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
           name: "[security/secrets_gitleaks] [Install] gitleaks"
@@ -192,10 +198,13 @@ commands:
         description: "The location of the directory to be targeted."
     steps:
       - run:
-          name: "[security/golang_gosec] [Install] curl"
+          name: "[security/core] [Install] curl, sudo"
           command: |
             if [[ ! $(which curl) ]]; then
               (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
       - run:
           name: "[security/golang_gosec] [Install] golang 1.14.2"
@@ -236,10 +245,14 @@ commands:
         description: The directory to be scanned with nancy
     steps:
       - run:
-          name: "[security/golang_nancy] [Install] curl"
+          name: "[security/core] [Install] curl, sudo"
           command: |
-            sudo apt update
-            sudo apt install -y curl
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
       - run:
           name: "[security/golang_nancy] [Install] golang 1.14.2"
           command: |
@@ -275,10 +288,14 @@ commands:
         description: The directory to be scanned with nancy
     steps:
       - run:
-          name: "[security/javascript_insider] [Install] curl"
+          name: "[security/core] [Install] curl, sudo"
           command: |
-            sudo apt update
-            sudo apt install -y curl
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
       - run:
           name: "[security/javascript_insider] [Prepare] Create inside tool folder"
           command: mkdir -p ~/.circleci-security/tool/insider
@@ -311,6 +328,15 @@ commands:
         type: string
         description: "Any specific headers to be provided (in a=b;c=d format)."
     steps:
+      - run:
+          name: "[security/core] [Install] curl, sudo"
+          command: |
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
       - run:
           name: "[security/shed] [Install] Python 3, pip"
           command: |
