@@ -30,12 +30,24 @@ commands:
             if [[ ! $(which sudo) ]]; then
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
+      # - run:
+      #     name: "[security/parse] [Install] Python 3, pip"
+      #     command: |
+      #       sudo apt-get update
+      #       sudo apt-get install -y python3-dev
+      #       sudo apt-get install -y python3-pip
       - run:
-          name: "[security/parse] [Install] Python 3, pip"
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y python3-dev
-            sudo apt-get install -y python3-pip
+            name: "[security/parse] [Install] Python 3.6.12"
+            command: |
+              sudo apt-get update
+              sudo apt-get install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev
+              sudo apt-get install libsqlite3-0
+              curl https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz
+              tar xvf Python-3.6.12.tar.xz
+              cd Python-3.6.12
+              ./configure --enable-optimizations --enable-loadable-sqlite-extensions
+              make -j 8
+              sudo make altinstall
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/parsed_output
@@ -47,7 +59,7 @@ commands:
           command: |
             git clone https://github.com/itsdean/circleci-security-parser ~/.circleci-security/tool/circleci-security-parser
             cd ~/.circleci-security/tool/circleci-security-parser
-            pip3 install --user -r requirements.txt
+            pip3.6 install --user -r requirements.txt
       - when:
           condition: << parameters.config >>
           steps:
@@ -55,7 +67,7 @@ commands:
                 name: "[security/parse] [Run] circleci-security-parser"
                 command: |
                   cd ~/.circleci-security/tool/circleci-security-parser
-                  python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
+                  python3.6 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
       - unless:
           condition: << parameters.config >>
           steps:
@@ -63,7 +75,7 @@ commands:
                 name: "[security/parse] [Run] circleci-security-parser"
                 command: |
                   cd ~/.circleci-security/tool/circleci-security-parser
-                  python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v
+                  python3.6 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v
       - store_artifacts:
           path: ~/.circleci-security/parsed_output
 
