@@ -45,9 +45,9 @@ commands:
               curl https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz > Python-3.6.12.tar.xz
               tar xvf Python-3.6.12.tar.xz
               cd Python-3.6.12
-              ./configure --enable-optimizations --enable-loadable-sqlite-extensions
-              make -j 8
-              sudo make altinstall
+              ./configure --enable-loadable-sqlite-extensions
+              make -j8 build_all
+              sudo make -j8 altinstall
       - run:
           name: "[security/parse] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/parsed_output
