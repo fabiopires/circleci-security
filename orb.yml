@@ -324,6 +324,7 @@ commands:
             cd ~/.circleci-security/tool_output/insider
             ~/.circleci-security/tool/insider/insider -tech javascript -no-html -no-banner -force -target << parameters.target_directory >>
             mv report.json results_insider_output.json
+          no_output_timeout: 30m
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
