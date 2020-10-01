@@ -193,10 +193,14 @@ commands:
           name: "[security/secrets_gitleaks] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output/gitleaks
       - run:
+          name: "[security/secrets_gitleaks] [Prepare] Download config file"
+          command: curl -sL https://github.com/itsdean/circleci-security/raw/master/gitleaks.toml > ~/.circleci-security/tool/gitleaks/gitleaks.toml
+      - run:
           name: "[security/secrets_gitleaks] [Run] gitleaks"
           command: |
             cd ~/.circleci-security/tool_output/gitleaks
-            ~/.circleci-security/tool/gitleaks/gitleaks --repo=<<parameters.target_directory>> --report-format=json --report=results_gitleaks_output.json || true
+            # ~/.circleci-security/tool/gitleaks/gitleaks --repo=<<parameters.target_directory>> --report-format=json --report=results_gitleaks_output.json || true
+            ~/.circleci-security/tool/gitleaks/gitleaks --repo=<<parameters.target_directory>> --branch=$CIRCLE_BRANCH --files-at-commit="latest" --report-format=json --config=~/.circleci-security/tool/gitleaks/gitleaks.toml --report=results_gitleaks_output.json || true
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
