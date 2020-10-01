@@ -46,6 +46,8 @@
 [allowlist]
     description = "global allowlist"
     files = [
+            '''^\.?gitleaks.toml$''',
             '''(.*?)(png|jpg|gif|doc|pdf|bin)$''',
-            '''yarn.lock'''
+            '''yarn.lock$''',
+            '''(go.mod|go.sum)$'''
             ]
