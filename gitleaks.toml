@@ -38,6 +38,11 @@
     regex = '''(?i)stripe(.{0,20})?['\"][sk|rk]_live_[0-9a-zA-Z]{24}'''
     tags = ["key", "Stripe"]
 
+[[rules]]
+	description = "Asymmetric Private Key"
+	regex = '''-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----'''
+	tags = ["key", "AsymmetricPrivateKey"]
+
 [allowlist]
     description = "global allowlist"
     files = [
