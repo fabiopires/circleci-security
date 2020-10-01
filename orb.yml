@@ -187,7 +187,7 @@ commands:
           name: "[security/secrets_gitleaks] [Install] gitleaks"
           command: |
             mkdir -p ~/.circleci-security/tool/gitleaks
-            curl -sL https://github.com/zricethezav/gitleaks/releases/download/v4.2.0/gitleaks-linux-amd64 > ~/.circleci-security/tool/gitleaks/gitleaks
+            curl -sL https://github.com/zricethezav/gitleaks/releases/download/v6.1.2/gitleaks-linux-amd64 > ~/.circleci-security/tool/gitleaks/gitleaks
             chmod +x ~/.circleci-security/tool/gitleaks/gitleaks
       - run:
           name: "[security/secrets_gitleaks] [Prepare] Create output folder"
