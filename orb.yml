@@ -199,7 +199,7 @@ commands:
           name: "[security/secrets_gitleaks] [Run] gitleaks"
           command: |
             export GITLEAKS_READLINE=`readlink -f ~/.circleci-security/tool/gitleaks/gitleaks.toml`
-            echo "gitleaks config location: $GITLEAKS_READLINK"
+            echo "gitleaks config location: $GITLEAKS_READLINE"
             cd ~/.circleci-security/tool_output/gitleaks
             ~/.circleci-security/tool/gitleaks/gitleaks --repo=~/project --branch=$CIRCLE_BRANCH --files-at-commit="latest" --report-format=json --config=$GITLEAKS_READLINE --report=results_gitleaks_output.json || true
       - store_artifacts:
