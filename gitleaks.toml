@@ -5,7 +5,7 @@
 
 [[rules]]
     description = "Generic Secret"
-    regex = '''(?i)(secret|password|pass|pw|key|token)(.{0,20})?['|"][0-9a-zA-Z]{32,45}['|"]'''
+    regex = '''(?i)(secret|password|pass|pw|key|token)(.{0,20})?['|"][0-9a-zA-Z]{32,64}['|"]'''
     tags = ["key", "Secret", "generic"]
 
 [[rules]]
