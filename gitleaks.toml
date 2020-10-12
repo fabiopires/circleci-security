@@ -43,6 +43,10 @@
 	regex = '''-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----'''
 	tags = ["key", "AsymmetricPrivateKey"]
 
+[[rules]]
+	description = "Files with keys and credentials"
+    file = '''(?i)(id_rsa|passwd|id_rsa.pub|pgpass|pem|key|shadow)'''
+
 [allowlist]
     description = "global allowlist"
     files = [
