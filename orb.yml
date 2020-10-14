@@ -157,16 +157,19 @@ commands:
           name: "[security/dependencies_snyk_node] [Install] Snyk"
           command: |
             if [[ ! -x "/usr/local/bin/snyk" ]]; then
-              if [[ "linux" == "alpine" && "true" == "true" ]]; then
+              if [[ $(which apk) ]]; then
                 apk add -q --no-progress --no-cache curl wget libstdc++ sudo
+                curl -s https://api.github.com/repos/snyk/snyk/releases/latest | grep "browser_download_url" | grep alpine | cut -d '"' -f 4 | xargs wget -q
+                sha256sum -c snyk-alpine.sha256
+                sudo mv snyk-alpine /usr/local/bin/snyk
+              else
+                curl -s https://api.github.com/repos/snyk/snyk/releases/latest | grep "browser_download_url" | grep linux | cut -d '"' -f 4 | xargs wget -q
+                sha256sum -c snyk-linux.sha256
+                sudo mv snyk-linux /usr/local/bin/snyk
               fi
-              curl -s https://api.github.com/repos/snyk/snyk/releases/latest | grep "browser_download_url" | grep linux | cut -d '"' -f 4 | xargs wget -q
-              sha256sum -c snyk-linux.sha256
-              sudo mv snyk-linux /usr/local/bin/snyk
               sudo chmod +x /usr/local/bin/snyk
             fi
             snyk config set disableSuggestions=true
-            snyk auth $<< parameters.token>>
       - run:
           name: "[security/dependencies_snyk_node] [Run] Snyk"
           command: |
