@@ -170,6 +170,7 @@ commands:
               sudo chmod +x /usr/local/bin/snyk
             fi
             snyk config set disableSuggestions=true
+            snyk auth $<< parameters.token>>
       - run:
           name: "[security/dependencies_snyk_node] [Run] Snyk"
           command: |
