@@ -175,7 +175,7 @@ commands:
           name: "[security/dependencies_snyk_node] [Run] Snyk"
           command: |
             cd << parameters.target_directory >>
-            snyk test --severity-threshold=low --json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json || true
+            snyk test --all-projects --severity-threshold=low --json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json || true
       - store_artifacts:
           path: ~/.circleci-security/tool_output
 
