@@ -45,7 +45,7 @@
 
 [[rules]]
 	description = "Files with keys and credentials"
-    path = '''(?i)(id_rsa|passwd|id_rsa.pub|pgpass|pem|key|shadow)'''
+    file = '''(?i)(id_rsa|passwd|id_rsa.pub|pgpass|pem|key|shadow)'''
     tags = ["key", "Credentials", "generic"]
 
 [allowlist]
