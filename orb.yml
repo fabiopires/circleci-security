@@ -58,12 +58,20 @@ commands:
           command: |
             git clone https://github.com/itsdean/circleci-security-parser ~/.circleci-security/tool/circleci-security-parser
             cd ~/.circleci-security/tool/circleci-security-parser
-            pip3 install --user -r requirements.txt
+            if [[ $(which pip3.6) ]]; then
+              pip3.6 install --user -r requirements.txt
+            else
+              pip3 install --user -r requirements.txt
+            fi
       - run:
           name: "[security/parse] [Run] circleci-security-parser"
           command: |
             cd ~/.circleci-security/tool/circleci-security-parser
-            python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
+            if [[ $(which python3.6) ]]; then
+              python3.6 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
+            else
+              python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>    
+            fi
       - store_artifacts:
           path: ~/.circleci-security/parsed_output
 
