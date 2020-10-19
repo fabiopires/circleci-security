@@ -31,12 +31,6 @@ commands:
             if [[ ! $(which sudo) ]]; then
               (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
             fi
-      # - run:
-      #     name: "[security/parse] [Install] Python 3, pip"
-      #     command: |
-      #       sudo apt-get update
-      #       sudo apt-get install -y python3-dev
-      #       sudo apt-get install -y python3-pip
       - run:
             name: "[security/parse] [Install] Python 3.6.12"
             command: |
@@ -49,7 +43,7 @@ commands:
                 curl https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz > Python-3.6.12.tar.xz
                 tar xvf Python-3.6.12.tar.xz
                 cd Python-3.6.12
-                ./configure --enable-loadable-sqlite-extensions
+                ./configure --enable-loadable-sqlite-extensions --with-ensurepip=install
                 make -j8 build_all
                 sudo make -j8 altinstall
               fi
@@ -70,22 +64,6 @@ commands:
           command: |
             cd ~/.circleci-security/tool/circleci-security-parser
             python3 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
-      # - when:
-      #     condition: << parameters.config >>
-      #     steps:
-      #       - run:
-      #           name: "[security/parse] [Run] circleci-security-parser"
-      #           command: |
-      #             cd ~/.circleci-security/tool/circleci-security-parser
-      #             python3.6 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v -c << parameters.config >>
-      # - unless:
-      #     condition: << parameters.config >>
-      #     steps:
-      #       - run:
-      #           name: "[security/parse] [Run] circleci-security-parser"
-      #           command: |
-      #             cd ~/.circleci-security/tool/circleci-security-parser
-      #             python3.6 main.py -i ~/.circleci-security/tool_output -o ~/.circleci-security/parsed_output -v
       - store_artifacts:
           path: ~/.circleci-security/parsed_output
 
