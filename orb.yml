@@ -86,6 +86,15 @@ commands:
         default: "~/project"
         type: string
         description: "The location of the directory to be targeted."
+      private_url:
+        type: string
+        description: "The location of a private image repository (if required)"
+      username:
+        type: string
+        description: "The required private repository username"
+      password:
+        type: string
+        description: "The required private repository password"
     steps:
       - run:
           name: "[security/core] [Install] curl, sudo"
@@ -103,6 +112,16 @@ commands:
       - run:
           name: "[security/container_trivy] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output/trivy
+          # add prepare state for if private repo
+      - when:
+          condition: << parameters.private_url >>
+          steps:
+            - run:
+                name: "[security/container_trivy] [Prepare] Private repository credentials"
+                command: |
+                  export TRIVY_AUTH_URL=<< parameters.private_url >>
+                  export TRIVY_USERNAME=<< parameters.username >>
+                  export TRIVY_PASSWORD=<< parameters.password >>
       - run:
           name: "[security/contaainer_trivy] [Run] trivy"
           command: |
