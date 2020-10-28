@@ -87,12 +87,15 @@ commands:
         type: string
         description: "The location of the directory to be targeted."
       private_url:
+        default: ""
         type: string
         description: "The location of a private image repository (if required)"
       username:
+        default: ""
         type: string
         description: "The required private repository username"
       password:
+        default: ""
         type: string
         description: "The required private repository password"
     steps:
