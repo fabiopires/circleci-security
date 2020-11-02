@@ -115,7 +115,6 @@ commands:
       - run:
           name: "[security/container_trivy] [Prepare] Create output folder"
           command: mkdir -p ~/.circleci-security/tool_output/trivy
-          # add prepare state for if private repo
       - when:
           condition: << parameters.private_url >>
           steps:
