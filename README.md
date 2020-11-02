@@ -3,7 +3,7 @@ CircleCI Orb that allows you to leverage multiple security tools in your pipelin
 Invoking any of the security steps will run the relevant tool, and upload its output (in JSON format) as a CircleCi artifact.
 
 # Current Version
-*salidas/security@0.4.4*
+*salidas/security@0.5.0*
 
 # Table of Contents
 
@@ -119,6 +119,10 @@ Uses [gitleaks](https://github.com/zricethezav/gitleaks) to scan the checked out
 Uses [trivy](https://github.com/aquasecurity/trivy) to scan an image for vulnerabilities in its dependencies/packages.
 #### Parameters
 - (required) `image_name` - The name of the Docker image to be pulled and scanned.
+- (optional) `target_directory` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
+- (optional) `private_url` - The location of a repository if the image is stored is private (i.e. in a company Artifactory).
+- (optional) `username` - The username of the account to log in; used only if accessing a private repository.
+- (optional) `password` - The password of the account used to log in; used only if affeccting a private repository.
 #### Usage
 ```yaml
 - security/container_trivy:
