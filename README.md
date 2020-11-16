@@ -3,7 +3,7 @@ CircleCI Orb that allows you to leverage multiple security tools in your pipelin
 Invoking any of the security steps will run the relevant tool, and upload its output (in JSON format) as a CircleCi artifact.
 
 # Current Version
-*salidas/security@0.5.0*
+*salidas/security@0.5.1*
 
 # Table of Contents
 
