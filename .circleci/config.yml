@@ -27,8 +27,7 @@ workflows:
           add-pr-comment: false
           fail-if-semver-not-indicated: true
           publish-version-tag: true
-          ssh-fingerprints:
-            - $SSH_FINGERPRINT
+          ssh-fingerprints: f6:58:31:c6:ed:69:26:b6:94:98:27:da:19:1f:e8:ee
           requires:
             - hold-for-publish
           filters:
