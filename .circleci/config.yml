@@ -31,7 +31,7 @@ workflows:
       - orb-tools/dev-promote-prod-from-git-tag:
           orb-name: salidas/security
           add-pr-comment: false
-          requires: 
+          requires:
             - hold-for-publish
           filters:
             branches:
