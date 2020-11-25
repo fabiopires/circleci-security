@@ -1,0 +1,42 @@
+description: "Runs the existing snyk/snyk orb on the project."
+parameters:
+  token:
+    default: SNYK_TOKEN
+    type: string
+    description: The name of the environment variable storing the snyk.io API token.
+  target_directory:
+    default: "~/project"
+    type: string
+    description: "The location of the directory to be targeted."
+steps:
+  - *core_install
+  - run:
+      name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
+      command: mkdir -p ~/.circleci-security/tool_output/snyk
+  - run:
+      name: "[security/dependencies_snyk_node] [Prepare] cd into target directory"
+      command: cd << parameters.target_directory >>
+  - run:
+      name: "[security/dependencies_snyk_node] [Install] Snyk"
+      command: |
+        if [[ ! -x "/usr/local/bin/snyk" ]]; then
+          if [[ $(which apk) ]]; then
+            apk add -q --no-progress --no-cache curl wget libstdc++ sudo
+            curl -s https://api.github.com/repos/snyk/snyk/releases/latest | grep "browser_download_url" | grep alpine | cut -d '"' -f 4 | xargs wget -q
+            sha256sum -c snyk-alpine.sha256
+            sudo mv snyk-alpine /usr/local/bin/snyk
+          else
+            curl -s https://api.github.com/repos/snyk/snyk/releases/latest | grep "browser_download_url" | grep linux | cut -d '"' -f 4 | xargs wget -q
+            sha256sum -c snyk-linux.sha256
+            sudo mv snyk-linux /usr/local/bin/snyk
+          fi
+          sudo chmod +x /usr/local/bin/snyk
+        fi
+        snyk config set disableSuggestions=true
+        snyk auth $<< parameters.token>>
+  - run:
+      name: "[security/dependencies_snyk_node] [Run] Snyk"
+      command: |
+        cd << parameters.target_directory >>
+        snyk test --all-projects --severity-threshold=low --json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json || true
+  - *store

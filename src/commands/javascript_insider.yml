@@ -1,0 +1,26 @@
+description: "Runs insider-cli on the target."
+parameters:
+  target_directory:
+    default: ~/project
+    type: string
+    description: The directory to be scanned with nancy
+steps:
+  - *core_install
+  - run:
+      name: "[security/javascript_insider] [Prepare] Create inside tool folder"
+      command: mkdir -p ~/.circleci-security/tool/insider
+  - run:
+      name: "[security/javascript_insider] [Install] insider-cli"
+      command: |
+        cd ~/.circleci-security/tool/insider && curl -sL https://github.com/insidersec/insider/releases/download/2.0.5/insider_2.0.5_linux_x86_64.tar.gz | tar -xvz && cd ~
+  - run:
+      name: "[security/javascript_insider] [Prepare] Create output folder"
+      command: mkdir -p ~/.circleci-security/tool_output/insider
+  - run:
+      name: "[security/javascript_insider] [Run] insider-cli"
+      command: |
+        cd ~/.circleci-security/tool_output/insider
+        ~/.circleci-security/tool/insider/insider -tech javascript -no-html -no-banner -force -target << parameters.target_directory >>
+        mv report.json results_insider_$(date +"%Y%m%d%H%M")_output.json
+      no_output_timeout: 30m
+  - *store

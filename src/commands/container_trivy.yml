@@ -1,0 +1,50 @@
+description: "Runs trivy on a Docker image."
+parameters:
+  image_name:
+    type: string
+    description: "Name of the container image to scan"
+  target_directory:
+    default: "~/project"
+    type: string
+    description: "The location of the directory to be targeted."
+  private_url:
+    default: ""
+    type: string
+    description: "The location of a private image repository (if required)"
+  username:
+    default: ""
+    type: string
+    description: "The required private repository username"
+  password:
+    default: ""
+    type: string
+    description: "The required private repository password"
+steps:
+  - *core_install
+  - run:
+      name: "[security/container_trivy] [Install] trivy"
+      command: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+  - run:
+      name: "[security/container_trivy] [Prepare] Create output folder"
+      command: mkdir -p ~/.circleci-security/tool_output/trivy
+  - when:
+      condition: << parameters.private_url >>
+      steps:
+        - run:
+            name: "[security/container_trivy] [Run] trivy"
+            command: |
+              export TRIVY_AUTH_URL=<< parameters.private_url >>
+              export TRIVY_USERNAME=<< parameters.username >>
+              export TRIVY_PASSWORD=<< parameters.password >>
+              cd ~/.circleci-security/tool_output/trivy
+              trivy image -f json -o results_trivy.json << parameters.image_name >>
+  - unless:
+      condition: << parameters.private_url >>
+      steps:
+        - run:
+            name: "[security/container_trivy] [Run] trivy"
+            command: |
+              cd ~/.circleci-security/tool_output/trivy
+              trivy image -f json -o results_trivy.json << parameters.image_name >>
+  - *store

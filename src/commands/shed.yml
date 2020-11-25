@@ -1,0 +1,47 @@
+description: "Runs SHeD on a URL to report back on headers and cookies"
+parameters:
+  url:
+    default: "http://127.0.0.1"
+    type: string
+    description: "The full URI to be requested."
+  headers:
+    default: ""
+    type: string
+    description: "Any specific headers to be provided (in a=b;c=d format)."
+steps:
+  - *core_install
+  - run:
+      name: "[security/shed] [Install] Python 3, pip"
+      command: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+        sudo apt-get install -y python3-pip
+  - run:
+      name: "[security/shed] [Prepare] Create output folder"
+      command: mkdir -p ~/.circleci-security/tool_output/shed
+  - run:
+      name: "[security/shed] [Prepare] Create tool folder"
+      command: mkdir -p ~/.circleci-security/tool
+  - run:
+      name: "[security/shed] [Install] SHeD"
+      command: |
+        git clone https://github.com/itsdean/SHeD ~/.circleci-security/tool/shed
+        cd ~/.circleci-security/tool/shed
+        pip3 install -r requirements.txt
+  - when:
+      condition: << parameters.headers >>
+      steps:
+        - run:
+            name: "[security/shed] [Run] SHeD"
+            command: |
+              cd ~/.circleci-security/tool/shed
+              python3 shed.py -u << parameters.url >> --header << parameters.headers >> --output ~/.circleci-security/tool_output/shed/results_shed.json
+  - unless:
+      condition: << parameters.headers >>
+      steps:
+        - run:
+            name: "[security/shed] [Run] SHeD"
+            command: |
+              cd ~/.circleci-security/tool/shed
+              python3 shed.py -u << parameters.url >> --output ~/.circleci-security/tool_output/shed/results_shed.json
+  - *store
