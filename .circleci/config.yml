@@ -5,16 +5,29 @@ orbs:
   security: salidas/security@dev:master
 
 workflows:
-  test-pack:
+  test:
     jobs:
       - orb-tools/lint
       - orb-tools/pack
-      - hold-for-dev-publish:
+      - orb-tools/publish-dev:
+          orb-name: salidas/security
+          requires:
+            - orb-tools/lint
+            - orb-tools/pack
+
+  deploy:
+    jobs:
+      - orb-tools/lint
+      - orb-tools/pack
+      - hold-for-publish:
           type: approval
           requires:
             - orb-tools/lint
             - orb-tools/pack
-      - orb-tools/publish-dev:
+      - orb-tools/dev-promote-prod-from-commit-subject:
           orb-name: salidas/security
-          publish-sha-version: false
-          requires: [hold-for-dev-publish]
+          add-pr-comment: false
+          filters:
+            branches:
+              only:
+                - master
