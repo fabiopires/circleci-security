@@ -28,7 +28,7 @@ workflows:
             branches:
               only:
                 - master
-      - orb-tools/dev-promote-prod-from-commit-subjec:
+      - orb-tools/dev-promote-prod-from-commit-subject:
           orb-name: salidas/security
           add-pr-comment: false
           fail-if-semver-not-indicated: true
