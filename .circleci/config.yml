@@ -4,8 +4,9 @@ orbs:
   orb-tools: circleci/orb-tools@10.0
   security: salidas/security@dev:master
 
+
 workflows:
-  test:
+  build:
     jobs:
       - orb-tools/lint
       - orb-tools/pack
@@ -14,11 +15,9 @@ workflows:
           requires:
             - orb-tools/lint
             - orb-tools/pack
-
-  deploy:
-    jobs:
-      - orb-tools/lint
-      - orb-tools/pack
+          filters:
+            - ignore:
+                - master
       - hold-for-publish:
           type: approval
           requires:
@@ -27,6 +26,8 @@ workflows:
       - orb-tools/dev-promote-prod-from-git-tag:
           orb-name: salidas/security
           add-pr-comment: false
+          requires: 
+            - hold-for-publish
           filters:
             branches:
               only:
