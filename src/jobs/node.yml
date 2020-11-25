@@ -1,0 +1,54 @@
+description: "Run security tools oriented for Node projects/repositories"
+docker:
+  - image: cimg/base:2020.01
+parameters:
+  target_directory:
+    default: ~/project
+    type: string
+    description: The directory to be targeted
+  snyk_token:
+    default: SNYK_TOKEN
+    type: string
+    description: The name of the environment variable storing the snyk.io API token.
+  config:
+    default: ~/project/.security/parser.yml
+    type: string
+    description: "The location of the security.yml file to consume for the parser"
+  insider:
+    default: true
+    type: boolean
+  snyk:
+    default: true
+    type: boolean
+  gitleaks:
+    default: true
+    type: boolean
+  parse:
+    default: true
+    type: boolean
+steps:
+  - checkout
+  - run:
+      name: "Initiate submodules"
+      command: git submodule update --init --remote
+  - when:
+      condition: << parameters.insider >>
+      steps:
+        - javascript_insider:
+            target_directory: << parameters.target_directory >>
+  - when:
+      condition: << parameters.snyk >>
+      steps:
+        - dependencies_snyk_node:
+            target_directory: << parameters.target_directory >>
+            token: << parameters.snyk_token >>
+  - when:
+      condition: << parameters.gitleaks >>
+      steps:
+        - secrets_gitleaks:
+            target_directory: << parameters.target_directory >>
+  - when:
+      condition: << parameters.parse >>
+      steps:
+        - parse:
+            config: << parameters.config >>

@@ -1,18 +1,41 @@
 version: 2.1
 
 orbs:
-  orb-tools: circleci/orb-tools@2.0.0
+  orb-tools: circleci/orb-tools@10.0
   security: salidas/security@dev:master
 
+
 workflows:
-  # The main workflow of this config file aims to test all functionality made available
-  # by the security orb.
-  validate_and_deploy_orb:
+  build:
     jobs:
-      # The first job is to check that the syntax of the orb is valid, and then
-      # push it to the Circle CI registry.
-      - orb-tools/publish:
-          orb-path: orb.yml
-          orb-ref: salidas/security@dev:${CIRCLE_BRANCH}
-          publish-token-variable: "$CIRCLECI_DEV_API_TOKEN"
-          validate: true
+      - orb-tools/lint
+      - orb-tools/pack
+      - orb-tools/publish-dev:
+          orb-name: salidas/security
+          requires:
+            - orb-tools/lint
+            - orb-tools/pack
+          filters:
+            branches:
+              ignore:
+                  - master
+      - hold-for-publish:
+          type: approval
+          requires:
+            - orb-tools/lint
+            - orb-tools/pack
+          filters:
+            branches:
+              only:
+                - master
+      - orb-tools/dev-promote-prod-from-commit-subject:
+          orb-name: salidas/security
+          add-pr-comment: false
+          fail-if-semver-not-indicated: true
+          publish-version-tag: true
+          requires:
+            - hold-for-publish
+          filters:
+            branches:
+              only:
+                - master

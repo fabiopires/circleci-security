@@ -1,0 +1,6 @@
+version: 2.1
+description: Security tooling steps
+
+# The security orb uses existing orbs to leverage already-coded testing steps.
+orbs:
+  snyk: snyk/snyk@0.0.8
