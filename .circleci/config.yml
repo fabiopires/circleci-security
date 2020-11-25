@@ -24,6 +24,10 @@ workflows:
           requires:
             - orb-tools/lint
             - orb-tools/pack
+          filters:
+            branches:
+              only:
+                - master
       - orb-tools/dev-promote-prod-from-git-tag:
           orb-name: salidas/security
           add-pr-comment: false
