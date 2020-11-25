@@ -9,7 +9,15 @@ parameters:
     type: string
     description: The directory to be scanned with nancy
 steps:
-  - *core_install
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
   - run:
       name: "[security/golang_nancy] [Install] golang 1.14.2"
       command: |
@@ -32,4 +40,5 @@ steps:
       command: |
         cd << parameters.target_directory >>
         go list -json -m all | ~/.circleci-security/tool/nancy/nancy -quiet -output json > ~/.circleci-security/tool_output/nancy/results_nancy.json || true
-  - *store
+  - store_artifacts:
+      path: ~/.circleci-security/tool_output

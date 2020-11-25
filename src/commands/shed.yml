@@ -9,7 +9,15 @@ parameters:
     type: string
     description: "Any specific headers to be provided (in a=b;c=d format)."
 steps:
-  - *core_install
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
   - run:
       name: "[security/shed] [Install] Python 3, pip"
       command: |
@@ -44,4 +52,5 @@ steps:
             command: |
               cd ~/.circleci-security/tool/shed
               python3 shed.py -u << parameters.url >> --output ~/.circleci-security/tool_output/shed/results_shed.json
-  - *store
+  - store_artifacts:
+      path: ~/.circleci-security/tool_output

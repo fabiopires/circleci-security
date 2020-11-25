@@ -20,7 +20,15 @@ parameters:
     type: string
     description: "The required private repository password"
 steps:
-  - *core_install
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
   - run:
       name: "[security/container_trivy] [Install] trivy"
       command: |
@@ -47,4 +55,5 @@ steps:
             command: |
               cd ~/.circleci-security/tool_output/trivy
               trivy image -f json -o results_trivy.json << parameters.image_name >>
-  - *store
+  - store_artifacts:
+      path: ~/.circleci-security/tool_output

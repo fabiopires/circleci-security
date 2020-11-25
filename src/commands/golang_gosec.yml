@@ -5,7 +5,15 @@ description: "Runs gosec on the target."
         type: string
         description: "The location of the directory to be targeted."
     steps:
-      - *core_install
+      - run:
+          name: "[security/core] [Install] curl, sudo"
+          command: |
+            if [[ ! $(which curl) ]]; then
+              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+            fi
+            if [[ ! $(which sudo) ]]; then
+              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+            fi
       - run:
           name: "[security/golang_gosec] [Install] golang 1.14.2"
           command: |
@@ -28,4 +36,5 @@ description: "Runs gosec on the target."
           command: |
             cd ~/.circleci-security/tool_output/golang_gosec
             ~/.circleci-security/tool/gosec/bin/gosec -fmt=json -out=results_gosec.json << parameters.target_directory >>/... || true
-      - *store
+      - store_artifacts:
+          path: ~/.circleci-security/tool_output

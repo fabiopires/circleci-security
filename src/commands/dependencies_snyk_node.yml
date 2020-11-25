@@ -9,7 +9,15 @@ parameters:
     type: string
     description: "The location of the directory to be targeted."
 steps:
-  - *core_install
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
   - run:
       name: "[security/dependencies_snyk_node] [Prepare] Create output folder"
       command: mkdir -p ~/.circleci-security/tool_output/snyk
@@ -39,4 +47,5 @@ steps:
       command: |
         cd << parameters.target_directory >>
         snyk test --all-projects --severity-threshold=low --json > ~/.circleci-security/tool_output/snyk/results_snyk_node.json || true
-  - *store
+  - store_artifacts:
+      path: ~/.circleci-security/tool_output

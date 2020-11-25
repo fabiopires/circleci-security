@@ -4,18 +4,3 @@ description: Security tooling steps
 # The security orb uses existing orbs to leverage already-coded testing steps.
 orbs:
   snyk: snyk/snyk@0.0.8
-
-aliases:
-  - &core_install
-    run:
-      name: "[security/core] [Install] curl, sudo"
-      command: |
-        if [[ ! $(which curl) ]]; then
-          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
-        fi
-        if [[ ! $(which sudo) ]]; then
-          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
-        fi
-  - &store
-    store_artifacts:
-      path: ~/.circleci-security/tool_output
