@@ -16,7 +16,7 @@ workflows:
             - orb-tools/lint
             - orb-tools/pack
           filters:
-            - ignore:
+            ignore:
                 - master
       - hold-for-publish:
           type: approval
