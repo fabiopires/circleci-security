@@ -1,40 +1,40 @@
 description: "Runs gosec on the target."
-    parameters:
-      target_directory:
-        default: "~/project"
-        type: string
-        description: "The location of the directory to be targeted."
-    steps:
-      - run:
-          name: "[security/core] [Install] curl, sudo"
-          command: |
-            if [[ ! $(which curl) ]]; then
-              (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
-            fi
-            if [[ ! $(which sudo) ]]; then
-              (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
-            fi
-      - run:
-          name: "[security/golang_gosec] [Install] golang 1.14.2"
-          command: |
-            wget -c https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
-            export PATH=$PATH:/usr/local/go/bin >> ~/.profile && source ~/.profile
-            go version
-      - run:
-          name: "[security/golang_gosec] [Prepare] Create gosec tool folder"
-          command: mkdir -p ~/.circleci-security/tool/gosec
-      - run:
-          name: "[security/golang_gosec] [Install] gosec"
-          command: |
-            cd ~/.circleci-security/tool/gosec
-            curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s v2.3.0
-      - run:
-          name: "[security/golang_gosec] [Prepare] Create output folder"
-          command: mkdir -p ~/.circleci-security/tool_output/golang_gosec
-      - run:
-          name: "[security/golang_gosec] [Run] gosec"
-          command: |
-            cd ~/.circleci-security/tool_output/golang_gosec
-            ~/.circleci-security/tool/gosec/bin/gosec -fmt=json -out=results_gosec.json << parameters.target_directory >>/... || true
-      - store_artifacts:
-          path: ~/.circleci-security/tool_output
+parameters:
+  target_directory:
+    default: "~/project"
+    type: string
+    description: "The location of the directory to be targeted."
+steps:
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
+  - run:
+      name: "[security/golang_gosec] [Install] golang 1.14.2"
+      command: |
+        wget -c https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+        export PATH=$PATH:/usr/local/go/bin >> ~/.profile && source ~/.profile
+        go version
+  - run:
+      name: "[security/golang_gosec] [Prepare] Create gosec tool folder"
+      command: mkdir -p ~/.circleci-security/tool/gosec
+  - run:
+      name: "[security/golang_gosec] [Install] gosec"
+      command: |
+        cd ~/.circleci-security/tool/gosec
+        curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s v2.3.0
+  - run:
+      name: "[security/golang_gosec] [Prepare] Create output folder"
+      command: mkdir -p ~/.circleci-security/tool_output/golang_gosec
+  - run:
+      name: "[security/golang_gosec] [Run] gosec"
+      command: |
+        cd ~/.circleci-security/tool_output/golang_gosec
+        ~/.circleci-security/tool/gosec/bin/gosec -fmt=json -out=results_gosec.json << parameters.target_directory >>/... || true
+  - store_artifacts:
+      path: ~/.circleci-security/tool_output

@@ -52,12 +52,3 @@ steps:
       steps:
         - parse:
             config: << parameters.config >>
-        # - when:
-        #     condition: << parameters.config >>
-        #     steps:
-        #       - parse:
-        #           config: << parameters.config >>
-        # - unless:
-        #     condition: << parameters.config >>
-        #     steps:
-        #       - parse
