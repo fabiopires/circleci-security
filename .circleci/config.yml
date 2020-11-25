@@ -24,7 +24,7 @@ workflows:
           requires:
             - orb-tools/lint
             - orb-tools/pack
-      - orb-tools/dev-promote-prod-from-commit-subject:
+      - orb-tools/dev-promote-prod-from-git-tag:
           orb-name: salidas/security
           add-pr-comment: false
           filters:
