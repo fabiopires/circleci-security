@@ -4,7 +4,6 @@ orbs:
   orb-tools: circleci/orb-tools@10.0
   security: salidas/security@dev:master
 
-
 workflows:
   build:
     jobs:
@@ -28,6 +27,7 @@ workflows:
           add-pr-comment: false
           fail-if-semver-not-indicated: true
           publish-version-tag: true
+          ssh-fingerprints: f6:58:31:c6:ed:69:26:b6:94:98:27:da:19:1f:e8:ee
           requires:
             - hold-for-publish
           filters:
