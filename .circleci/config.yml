@@ -15,15 +15,10 @@ workflows:
           requires:
             - orb-tools/lint
             - orb-tools/pack
-          filters:
-            branches:
-              ignore:
-                  - master
       - hold-for-publish:
           type: approval
           requires:
-            - orb-tools/lint
-            - orb-tools/pack
+            - orb-tools/publish-dev
           filters:
             branches:
               only:
