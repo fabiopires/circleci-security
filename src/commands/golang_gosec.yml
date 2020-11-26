@@ -15,10 +15,10 @@ steps:
           (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
         fi
   - run:
-      name: "[security/golang_gosec] [Install] golang 1.14.2"
+      name: "[security/golang_gosec] [Install] golang 1.15.4"
       command: |
-        wget -c https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
-        export PATH=$PATH:/usr/local/go/bin >> ~/.profile && source ~/.profile
+        wget -c https://dl.google.com/go/go1.15.4.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+        export PATH=$PATH:/usr/local/go/bin >> ~/.go_profile && source ~/.go_profile
         go version
   - run:
       name: "[security/golang_gosec] [Prepare] Create gosec tool folder"
