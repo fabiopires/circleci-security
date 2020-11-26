@@ -27,7 +27,7 @@ steps:
       name: "[security/golang_gosec] [Install] gosec"
       command: |
         cd ~/.circleci-security/tool/gosec
-        curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s v2.3.0
+        curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s v2.5.0
   - run:
       name: "[security/golang_gosec] [Prepare] Create output folder"
       command: mkdir -p ~/.circleci-security/tool_output/golang_gosec
