@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   orb-tools: circleci/orb-tools@10.0
-  security: salidas/security@dev:master
 
 workflows:
   build:
@@ -10,7 +9,7 @@ workflows:
       - orb-tools/lint
       - orb-tools/pack
       - orb-tools/publish-dev:
-          orb-name: salidas/security
+          orb-name: dean/security
           requires:
             - orb-tools/lint
             - orb-tools/pack
@@ -23,7 +22,7 @@ workflows:
               only:
                 - master
       - orb-tools/dev-promote-prod-from-commit-subject:
-          orb-name: salidas/security
+          orb-name: dean/security
           add-pr-comment: false
           fail-if-semver-not-indicated: true
           publish-version-tag: true
