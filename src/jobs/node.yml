@@ -46,7 +46,7 @@ steps:
       condition: << parameters.gitleaks >>
       steps:
         - secrets_gitleaks:
-            target_directory: << parameters.target_directory >>
+            target_repository: << parameters.target_directory >>
   - when:
       condition: << parameters.parse >>
       steps:
