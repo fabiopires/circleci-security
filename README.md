@@ -105,7 +105,7 @@ Uses [nancy](https://github.com/sonatype-nexus-community/nancy) to leverage Sona
 ### gitleaks
 Uses [gitleaks](https://github.com/zricethezav/gitleaks) to scan the checked out repository for potentially hardcoded secrets and keys.
 #### Parameters
-- (optional) `target_directory` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
+- (optional) `target_repository` - The location of the project to be scanned. By default this is "~/project", which is also where CircleCI typically clones to.
 #### Usage
 ```yaml
 - security/secrets_gitleaks
