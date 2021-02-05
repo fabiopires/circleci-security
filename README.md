@@ -25,7 +25,7 @@ Invoking any of the security steps will run the relevant tool, and upload its ou
 Add the following orb to your .circleci/config.yml file:
 ```yaml
 orbs:
-  security: salidas/security@<version>
+  security: dean/security@<version>
 ```
 
 Then, add security steps into your existing CircleCI build jobs! \
@@ -36,7 +36,7 @@ See **Features** below for a list of steps you can call.
 version: 2.1
 
 orbs:
-  security: salidas/security@<version>
+  security: dean/security@<version>
 
 jobs:
   check_node_dependencies: # The job you create/use to build/pull/test your project
