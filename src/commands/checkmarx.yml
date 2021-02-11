@@ -58,7 +58,7 @@ steps:
       command: |
         git clone https://github.com/itsdean/pymarx ~/.circleci-security/tool/checkmarx/pymarx
         cd ~/.circleci-security/tool/checkmarx/pymarx
-        pip install -r requirements.txt
+        pip3 install -r requirements.txt
   - run:
       name: "[security/checkmarx] [Run] pymarx"
       command: |
