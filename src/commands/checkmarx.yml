@@ -62,7 +62,7 @@ steps:
   - run:
       name: "[security/checkmarx] [Run] pymarx"
       command: |
-        cd ~/.circleci-security/tool/pymarx
+        cd ~/.circleci-security/tool/checkmarx/pymarx
         python3 main.py \
           --host $<< parameters.host >> \
           --username $<< parameters.username >> \
