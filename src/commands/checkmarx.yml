@@ -42,7 +42,7 @@ steps:
       name: "[security/checkmarx] [Install] Python3"
       command: |
         sudo apt-get update -y
-        sudo apt-get install -y python3 python3-dev
+        sudo apt-get install -y python3 python3-pip python3-dev
   - run:
       name: "[security/checkmarx] [Prepare] Create checkmarx folder"
       command: mkdir -p ~/.circleci-security/tool/checkmarx
