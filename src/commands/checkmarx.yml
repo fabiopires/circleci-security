@@ -70,7 +70,7 @@ steps:
           --project-file ~/.circleci-security/tool/checkmarx/project.zip \
           --project-name $<< parameters.project_name >> \
           --team $<< parameters.team >> \
-          --comment << parameters.comment >> \
+          --comment "<< parameters.comment >>" \
           --report results_checkmarx_output
   - store_artifacts:
       path: ~/.circleci-security/tool_output
