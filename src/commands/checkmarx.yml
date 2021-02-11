@@ -1,0 +1,76 @@
+description: "Pass project files to a Checkmarx instance"
+parameters:
+  host:
+    default: "CHECKMARX_HOST"
+    type: string
+    description: The environment variable storing the URL of the Checkmarx instance
+  username:
+    default: "CHECKMARX_USERNAME"
+    type: string
+    description: The Checkmarx username used to authenticate to the REST API
+  password:
+    default: "CHECKMARX_USERNAME"
+    type: string
+    description: The Checkmarx password used to authenticate to the REST API
+  project_name:
+    default: "CHECKMARX_PROJECT"
+    type: string
+    description: The name of the project in Checkmarx
+  team:
+    default: "CHECKMARX_TEAM"
+    type: string
+    description: The name of the team the project falls under in Checkmarx
+  comment:
+    default: "circleci-security Checkmarx scan"
+    type: string
+    description: "The comment to be left with the scan"
+  target_project:
+    default: ~/project
+    type: string
+    description: The project directory to be passed to Checkmarx
+steps:
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
+  - run:
+      name: "[security/checkmarx] [Install] Python3"
+      command: |
+        sudo apt-get update -y
+        sudo apt-get install -y python3 python3-dev
+  - run:
+      name: "[security/checkmarx] [Prepare] Create checkmarx folder"
+      command: mkdir -p ~/.circleci-security/tool/checkmarx
+  - run:
+      name: "[security/checkmarx] [Prepare] Convert project to zip"
+      command: |
+        zip -r ~/.circleci-security/tool/checkmarx/project.zip << parameters.target_project >>
+  - run:
+      name: "[security/checkmarx] [Prepare] Create output folder"
+      command: mkdir -p ~/.circleci-security/tool_output/checkmarx
+  - run:
+      name: "[security/checkmarx] [Install] checkmarx"
+      command: |
+        git clone https://github.com/itsdean/pymarx ~/.circleci-security/tool/checkmarx/pymarx
+        cd ~/.circleci-security/tool/checkmarx/pymarx
+        pip3 install -r requirements.txt
+  - run:
+      name: "[security/checkmarx] [Run] pymarx"
+      command: |
+        cd ~/.circleci-security/tool/pymarx
+        python3 main.py \
+          --host $<< parameters.host >> \
+          --username $<< parameters.username >> \
+          --password $<< parameters.password >> \
+          --project-file ~/.circleci-security/tool/checkmarx/project.zip \
+          --project-name $<< parameters.project_name >> \
+          --team $<< parameters.team >> \
+          --comment << parameters.comment >> \
+          --report results_checkmarx_output
+  - store_artifacts:
+      path: ~/.circleci-security/tool_output
