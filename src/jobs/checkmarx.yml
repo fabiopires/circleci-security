@@ -1,0 +1,59 @@
+description: "Pass project files to a Checkmarx instance"
+docker:
+  - image: cimg/base:2020.01
+parameters:
+  host:
+    default: "CHECKMARX_HOST"
+    type: string
+    description: The environment variable storing the URL of the Checkmarx instance
+  username:
+    default: "CHECKMARX_USERNAME"
+    type: string
+    description: The Checkmarx username used to authenticate to the REST API
+  password:
+    default: "CHECKMARX_USERNAME"
+    type: string
+    description: The Checkmarx password used to authenticate to the REST API
+  project_name:
+    default: "CHECKMARX_PROJECT"
+    type: string
+    description: The name of the project in Checkmarx
+  team:
+    default: "CHECKMARX_TEAM"
+    type: string
+    description: The name of the team the project falls under in Checkmarx
+  comment:
+    default: "circleci-security Checkmarx scan"
+    type: string
+    description: "The comment to be left with the scan"
+  target_project:
+    default: ~/project
+    type: string
+    description: The project directory to be passed to Checkmarx
+  parse:
+    default: true
+    type: boolean
+    description: Flag to determine whether the results should be put through the parser
+  parser_config:
+    default: ~/project/.security/parser.yml
+    type: string
+    description: "The location of the security.yml file to consume for the parser"
+  use_stunnel:
+    default: false
+    type: boolean
+    description: Flag to determine whether Checkmarx should be accessed via stunnel
+steps:
+  - checkout 
+  - checkmarx:
+      host: << parameters.host >>
+      username: << parameters.username >>
+      password: << parameters.password >>
+      project_name: << parameters.project_name >>
+      team: << parameters.team >>
+      comment: << parameters.comment >>
+      target_project: << parameters.target_project >>
+  - when:
+      condition: << parameters.parse >>
+      steps:
+        - parse:
+            config: << parameters.parser_config >>

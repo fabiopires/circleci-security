@@ -1,0 +1,59 @@
+description: "Create an stunnel connection"
+parameters:
+  stunnel_host:
+    default: "STUNNEL_HOST"
+    type: string
+    description: The environment variable storing the host to be connecting to
+  stunnel_host_port:
+    default: "STUNNEL_HOST_PORT"
+    type: string
+    description: The environment variable storing the port of the host to connecting via
+  accept_port:
+    default: "STUNNEL_ACCEPT_PORT"
+    type: string
+    description: The environment variable storing the stunnel accept port
+  preshared_key:
+    default: "STUNNEL_PSK"
+    type: string
+    description: The environment variable storing the stunnel preshared key
+  foreground:
+    default: "no"
+    type: string
+    description: Flag to set whether stunnel should be running in the foreground (options are yes/no)
+  target_host:
+    required: true
+    type: string
+    description: Name of the host to connect to through stunnel
+steps:
+  - run:
+      name: "[security/core] [Install] curl, sudo"
+      command: |
+        if [[ ! $(which curl) ]]; then
+          (set +o pipefail; apk add curl || apt-get install -y curl || yum install -y curl)
+        fi
+        if [[ ! $(which sudo) ]]; then
+          (set +o pipefail; apk add sudo || apt-get install -y sudo || yum install -y sudo)
+        fi
+  - run:
+      name: "[security/stunnel] [Install] stunnel"
+      command: |
+        if [[ ! $(which stunnel) ]]; then
+          (set +o pipefail; apk add stunnel || apt-get install -y stunnel || yum install -y stunnel)
+        fi
+  - run:
+      name: "[security/stunnel] [Prepare] stunnel configuration"
+      command: |
+        sudo curl -sL https://github.com/itsdean/circleci-security/raw/master/stunnel.conf > /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_PROCESS_FG/'${STUNNEL_PROCESS_FG}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_ACCEPT_PORT/'${STUNNEL_ACCEPT_PORT}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_CONNECT_PORT/'${STUNNEL_HOST_PORT}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_HOST/'${STUNNEL_HOST}'/g' /etc/stunnel/stunnel.conf
+        sudo echo << parameters.preshared_key >> >> /etc/stunnel/psk.txt
+  - run:
+      name: "[security/stunnel] [Prepare] Target hostname"
+      command: |
+        sudo echo "127.0.0.1 << parameters.target_hostname >>" >> /etc/hosts
+  - run:
+      name: "[security/stunnel] [Run] stunnel"
+      command: |
+        /usr/bin/stunnel /etc/stunnel/stunnel.conf
