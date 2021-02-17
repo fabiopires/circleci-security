@@ -43,7 +43,7 @@ parameters:
     type: boolean
     description: Flag to determine whether Checkmarx should be accessed via stunnel
 steps:
-  - checkout 
+  - checkout
   - checkmarx:
       host: << parameters.host >>
       username: << parameters.username >>
