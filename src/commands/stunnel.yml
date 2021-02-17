@@ -21,7 +21,6 @@ parameters:
     type: string
     description: Flag to set whether stunnel should be running in the foreground (options are yes/no)
   target_host:
-    required: true
     type: string
     description: Name of the host to connect to through stunnel
 steps:
@@ -49,10 +48,13 @@ steps:
         sudo sed -i 's/STUNNEL_CONNECT_PORT/'${STUNNEL_HOST_PORT}'/g' /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_HOST/'${STUNNEL_HOST}'/g' /etc/stunnel/stunnel.conf
         sudo echo << parameters.preshared_key >> >> /etc/stunnel/psk.txt
-  - run:
-      name: "[security/stunnel] [Prepare] Target hostname"
-      command: |
-        sudo echo "127.0.0.1 << parameters.target_hostname >>" >> /etc/hosts
+  - when:
+      condition: << parameters.target_hostname >>
+      steps:
+      - run:
+          name: "[security/stunnel] [Prepare] Target hostname"
+          command: |
+            sudo echo "127.0.0.1 << parameters.target_hostname >>" >> /etc/hosts
   - run:
       name: "[security/stunnel] [Run] stunnel"
       command: |
