@@ -49,12 +49,12 @@ steps:
         sudo sed -i 's/STUNNEL_HOST/'${STUNNEL_HOST}'/g' /etc/stunnel/stunnel.conf
         sudo echo << parameters.preshared_key >> >> /etc/stunnel/psk.txt
   - when:
-      condition: << parameters.target_hostname >>
+      condition: << parameters.target_host >>
       steps:
       - run:
           name: "[security/stunnel] [Prepare] Target hostname"
           command: |
-            sudo echo "127.0.0.1 << parameters.target_hostname >>" >> /etc/hosts
+            sudo echo "127.0.0.1 << parameters.target_host >>" >> /etc/hosts
   - run:
       name: "[security/stunnel] [Run] stunnel"
       command: |
