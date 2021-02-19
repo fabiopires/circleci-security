@@ -16,10 +16,6 @@ parameters:
     default: "STUNNEL_PSK"
     type: string
     description: The environment variable storing the stunnel preshared key
-  foreground:
-    default: "no"
-    type: string
-    description: Flag to set whether stunnel should be running in the foreground (options are yes/no)
   target_host:
     type: string
     description: Name of the host to connect to through stunnel
@@ -44,9 +40,9 @@ steps:
       command: |
         sudo curl -sL https://github.com/itsdean/circleci-security/raw/master/stunnel.conf > /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_PROCESS_FG/'${STUNNEL_PROCESS_FG}'/g' /etc/stunnel/stunnel.conf
-        sudo sed -i 's/STUNNEL_ACCEPT_PORT/'${STUNNEL_ACCEPT_PORT}'/g' /etc/stunnel/stunnel.conf
-        sudo sed -i 's/STUNNEL_CONNECT_PORT/'${STUNNEL_HOST_PORT}'/g' /etc/stunnel/stunnel.conf
-        sudo sed -i 's/STUNNEL_HOST/'${STUNNEL_HOST}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_ACCEPT_PORT/'${<< parameters.accept_port >>}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_HOST/'${<< parameters.stunnel_host >>}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_CONNECT_PORT/'${<< parameters.stunnel_host_port >>}'/g' /etc/stunnel/stunnel.conf
         sudo echo << parameters.preshared_key >> >> /etc/stunnel/psk.txt
   - when:
       condition: << parameters.target_host >>
