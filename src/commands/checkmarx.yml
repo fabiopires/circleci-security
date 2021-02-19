@@ -9,7 +9,7 @@ parameters:
     type: string
     description: The Checkmarx username used to authenticate to the REST API
   password:
-    default: "CHECKMARX_USERNAME"
+    default: "CHECKMARX_PASSWORD"
     type: string
     description: The Checkmarx password used to authenticate to the REST API
   project_name:
