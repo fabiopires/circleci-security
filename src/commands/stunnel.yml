@@ -45,7 +45,7 @@ steps:
         sudo sed -i 's/STUNNEL_PROCESS_FG/'${STUNNEL_PROCESS_FG}'/g' /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_ACCEPT_PORT/'${<< parameters.accept_port >>}'/g' /etc/stunnel/stunnel.conf
         # Do this first because of the STUNNEL_HOST name conflict
-        sudo sed -i 's/STUNNEL_CONNECT_PORT/'${<< parameters.stunnel_host_port >>}'/g' /etc/stunnel/stunnel.conf
+        sudo sed -i 's/STUNNEL_HOST_PORT/'${<< parameters.stunnel_host_port >>}'/g' /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_HOST/'${<< parameters.stunnel_host >>}'/g' /etc/stunnel/stunnel.conf
 
         echo $<< parameters.preshared_key >> | sudo tee /etc/stunnel/psk.txt
