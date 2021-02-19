@@ -39,11 +39,17 @@ steps:
       command: |
         sudo curl -sL https://github.com/itsdean/circleci-security/raw/master/stunnel.conf > /tmp/stunnel.conf
         sudo mv /tmp/stunnel.conf /etc/stunnel/
+        sudo chown root:root /etc/stunnel/stunnel.conf
+        sudo chmod 600 /etc/stunnel/stunnel.conf
+
         sudo sed -i 's/STUNNEL_PROCESS_FG/'${STUNNEL_PROCESS_FG}'/g' /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_ACCEPT_PORT/'${<< parameters.accept_port >>}'/g' /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_HOST/'${<< parameters.stunnel_host >>}'/g' /etc/stunnel/stunnel.conf
         sudo sed -i 's/STUNNEL_CONNECT_PORT/'${<< parameters.stunnel_host_port >>}'/g' /etc/stunnel/stunnel.conf
-        sudo echo << parameters.preshared_key >> >> /etc/stunnel/psk.txt
+
+        echo $<< parameters.preshared_key >> | sudo tee /etc/stunnel/psk.txt
+        sudo chown root:root /etc/stunnel/psk.txt
+        sudo chmod 600 /etc/stunnel/psk.txt
   - when:
       condition: << parameters.target_host >>
       steps:
@@ -54,4 +60,4 @@ steps:
   - run:
       name: "[security/stunnel] [Run] stunnel"
       command: |
-        /usr/bin/stunnel /etc/stunnel/stunnel.conf
+        sudo /usr/bin/stunnel /etc/stunnel/stunnel.conf
