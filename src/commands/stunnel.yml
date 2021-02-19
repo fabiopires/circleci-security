@@ -56,7 +56,7 @@ steps:
       - run:
           name: "[security/stunnel] [Prepare] Target hostname"
           command: |
-            sudo echo "127.0.0.1 << parameters.target_host >>" >> /etc/hosts
+            echo "127.0.0.1 << parameters.target_host >>" | sudo tee -a /etc/hosts
   - run:
       name: "[security/stunnel] [Run] stunnel"
       command: |
