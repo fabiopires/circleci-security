@@ -33,7 +33,7 @@ steps:
       name: "[security/stunnel] [Install] stunnel"
       command: |
         if [[ ! $(which stunnel) ]]; then
-          (set +o pipefail; apk add stunnel || apt-get install -y stunnel || yum install -y stunnel)
+          (set +o pipefail; sudo apk add stunnel || sudo apt-get install -y stunnel || sudo yum install -y stunnel)
         fi
   - run:
       name: "[security/stunnel] [Prepare] stunnel configuration"
