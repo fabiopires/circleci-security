@@ -33,7 +33,7 @@ steps:
       name: "[security/stunnel] [Install] stunnel"
       command: |
         sudo apt update
-        sudo apt install -y stunnel4=3:5.50-3
+        sudo apt install -y stunnel4
   - run:
       name: "[security/stunnel] [Prepare] stunnel configuration"
       command: |
